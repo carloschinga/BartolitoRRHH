@@ -374,11 +374,11 @@ public class RRHHController {
 
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
 
-    // GET: /api/reportes/asistencia/mensual?inicio=2025-12-01&fin=2025-12-31
+    // GET: /api/reportes/asistencia/mensual?inicio=2025-12-01&fin=2025-12-31&codiServ=1
     @GetMapping("/reportes/asistencia/mensual")
-    public ResponseEntity<Map<String, Object>> reporteMensual(@RequestParam String inicio, @RequestParam String fin) {
+    public ResponseEntity<Map<String, Object>> reporteMensual(@RequestParam String inicio, @RequestParam String fin, @RequestParam int codiServ ) {
 
-        List<Map<String, Object>> data = service.reporteAsistenciaMensual(inicio, fin);
+        List<Map<String, Object>> data = service.reporteAsistenciaMensual(inicio, fin, codiServ);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");
@@ -394,6 +394,146 @@ public class RRHHController {
     public ResponseEntity<Map<String, Object>> reporteDiario(@RequestParam String fecha, @RequestParam(required = false) Integer idEmpleado) {
 
         List<Map<String, Object>> data = service.reporteAsistenciaDiaria(fecha, idEmpleado);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /*====================== SECCIÓN EMPRESA ======================*/
+    @GetMapping("/empresas/listar")
+    public ResponseEntity<Map<String, Object>> obtenerEmpresa() {
+
+        try {
+            List<Map<String, Object>> result = service.obtenerEmpresas();
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("empresas", result);
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+            e.printStackTrace();
+
+            // 3. Devolvemos el mensaje de error a Postman
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar listar empresas");
+            // Aquí enviamos el error técnico real:
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/empresas/seleccionar/{codiEmpr}")
+    public ResponseEntity<Map<String, Object>> seleccionarEmpresaPorCodigo(@PathVariable Integer codiEmpr) {
+
+        Map<String, Object> horarioData = service.seleccionarEmpresaPorCodigo(codiEmpr);
+
+        Map<String, Object> data = new LinkedHashMap<>();
+
+        data.put("empresa", horarioData);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    /*====================== SECCIÓN DEPARTAMENTO ======================*/
+    @GetMapping("/departamentos/listar/{codiEmpr}")
+    public ResponseEntity<Map<String, Object>> obtenerDepartamento(@PathVariable Integer codiEmpr) {
+
+        try {
+            List<Map<String, Object>> result = service.obtenerDepartamentoPorEmpresa(codiEmpr);
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("departamentos", result);
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+            e.printStackTrace();
+
+            // 3. Devolvemos el mensaje de error a Postman
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar listar empresas");
+            // Aquí enviamos el error técnico real:
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/departamentos/seleccionar/{codiDepa}")
+    public ResponseEntity<Map<String, Object>> seleccionarDepartamentosPorCodigo(@PathVariable Integer codiDepa) {
+
+        Map<String, Object> horarioData = service.seleccionarDepartamentoPorCodigo(codiDepa);
+
+        Map<String, Object> data = new LinkedHashMap<>();
+
+        data.put("departamentos", horarioData);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    /*====================== SECCIÓN SERVICIO ======================*/
+    @GetMapping("/servicios/listar/{codiDepa}")
+    public ResponseEntity<Map<String, Object>> obtenerServicios(@PathVariable Integer codiDepa) {
+
+        try {
+            List<Map<String, Object>> result = service.obtenerServiciosPorDepartamento(codiDepa);
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("servicios", result);
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+            e.printStackTrace();
+
+            // 3. Devolvemos el mensaje de error a Postman
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar listar empresas");
+            // Aquí enviamos el error técnico real:
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/servicios/seleccionar/{codiServ}")
+    public ResponseEntity<Map<String, Object>> seleccionarServiciosPorCodigo(@PathVariable Integer codiServ) {
+
+        Map<String, Object> horarioData = service.seleccionarServiciosPorCodigo(codiServ);
+
+        Map<String, Object> data = new LinkedHashMap<>();
+
+        data.put("servicios", horarioData);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");

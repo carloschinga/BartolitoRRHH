@@ -160,8 +160,8 @@ public class RRHHService {
 
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
 
-    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin) {
-        return repository.reporteAsistenciaMensual(fechaInicio, fechaFin);
+    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin, int codiServ) {
+        return repository.reporteAsistenciaMensual(fechaInicio, fechaFin, codiServ);
     }
 
     public List<Map<String, Object>> reporteAsistenciaDiaria(String fecha, Integer idEmpleado) {
@@ -171,4 +171,54 @@ public class RRHHService {
         return repository.reporteAsistenciaDiaria(fecha, idFinal);
     }
 
+
+    /*====================== SECCIÓN EMPRESA ======================*/
+
+    public List<Map<String, Object>> obtenerEmpresas() {
+        return repository.obtenerEmpresa();
+    }
+
+    public Map<String, Object> seleccionarEmpresaPorCodigo(int codiEmpr) {
+        List<Map<String, Object>> results = repository.seleccionarEmpresa(codiEmpr);
+
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Empresa con código " + codiEmpr + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
+
+
+    /*====================== SECCIÓN DEPARTAMENTO ======================*/
+
+    public List<Map<String, Object>> obtenerDepartamentoPorEmpresa(int codiEmpr) {
+        return repository.obtenerDepartamentoXEmpresa(codiEmpr);
+    }
+
+    public Map<String, Object> seleccionarDepartamentoPorCodigo(int codiDepar) {
+        List<Map<String, Object>> results = repository.seleccionarEmpresa(codiDepar);
+
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Departamento con código " + codiDepar + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
+
+
+    /*====================== SECCIÓN SERVICIOS ======================*/
+
+    public List<Map<String, Object>> obtenerServiciosPorDepartamento(int codiServ) {
+        return repository.obtenerServiciosXDepartamento(codiServ);
+    }
+
+    public Map<String, Object> seleccionarServiciosPorCodigo(int codiServ) {
+        List<Map<String, Object>> results = repository.seleccionaServicioPorCodigo(codiServ);
+
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Servicio con código " + codiServ + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
 }

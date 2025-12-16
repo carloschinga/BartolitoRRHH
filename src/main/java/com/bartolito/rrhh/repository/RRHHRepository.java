@@ -135,12 +135,12 @@ public class RRHHRepository {
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
 
     // 1. REPORTE MENSUAL (Columnas dinámicas)
-    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin) {
+    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin, int codiServ) {
         // EXEC sp_bart_rrhh_asis_asistencia_mensual '2025-12-01','2025-12-31'
-        String sql = "EXEC sp_bart_rrhh_asis_asistencia_mensual ?, ?";
+        String sql = "EXEC sp_bart_rrhh_asis_asistencia_mensual ?, ?, ?";
 
         // JdbcTemplate mapeará las columnas de fechas (2025-12-01, etc.) automáticamente al Map
-        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin);
+        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin, codiServ);
     }
 
     // 2. REPORTE DIARIO (Puede ser un empleado o todos)
@@ -149,5 +149,44 @@ public class RRHHRepository {
         String sql = "EXEC sp_bart_rrhh_asis_asistencia_diaria ?, ?";
 
         return sigoldJdbc.queryForList(sql, fecha, idEmpleado);
+    }
+
+    /*====================== SECCIÓN EMPRESA ======================*/
+
+    public List<Map<String, Object>> obtenerEmpresa() {
+        String sql = "EXEC sp_bart_rrhh_empresa_listar";
+        return sigoldJdbc.queryForList(sql);
+    }
+
+    public List<Map<String, Object>> seleccionarEmpresa(int codiEmpr) {
+        String sql = "EXEC [sp_bart_rrhh_empresa_seleccionar] ?";
+
+        return sigoldJdbc.queryForList(sql, codiEmpr);
+    }
+
+    /*====================== SECCIÓN DEPARTAMENTO ======================*/
+
+    public List<Map<String, Object>> obtenerDepartamentoXEmpresa(int codiEmpr) {
+        String sql = "EXEC [sp_bart_rrhh_departamento_listar] ?";
+        return sigoldJdbc.queryForList(sql, codiEmpr);
+    }
+
+    public List<Map<String, Object>> seleccionarDepartameto(int codiDepa) {
+        String sql = "EXEC [sp_bart_rrhh_departamento_seleccionar] ?";
+
+        return sigoldJdbc.queryForList(sql, codiDepa);
+    }
+
+    /*====================== SECCIÓN DE SERVICIOS ======================*/
+
+    public List<Map<String, Object>> obtenerServiciosXDepartamento(int  codiDepa) {
+        String sql = "SELECT * FROM view_bart_rrhh_servicio where codiDepa=?";
+        return sigoldJdbc.queryForList(sql, codiDepa);
+    }
+
+    public List<Map<String, Object>> seleccionaServicioPorCodigo(Integer codiServ) {
+        String sql = "SELECT * FROM view_bart_rrhh_servicio WHERE codiServ = ? ";
+
+        return sigoldJdbc.queryForList(sql, codiServ);
     }
 }
