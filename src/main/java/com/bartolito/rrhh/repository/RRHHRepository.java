@@ -44,9 +44,9 @@ public class RRHHRepository {
 
     /*====================== SECCIÓN DE LA GESTIÓN HORARIO ======================*/
 
-    public List<Map<String, Object>> obtenerHorario() {
-        String sql = "EXEC sp_bart_rrhh_asis_horario_listar";
-        return sigoldJdbc.queryForList(sql);
+    public List<Map<String, Object>> obtenerHorarioPorEmpresa(int codiEmpr) {
+        String sql = "EXEC sp_bart_rrhh_asis_horario_listar ?";
+        return sigoldJdbc.queryForList(sql,codiEmpr);
     }
 
     public List<Map<String, Object>> seleccionarHorarioPorCodigo(int codiHora) {
@@ -55,15 +55,15 @@ public class RRHHRepository {
         return sigoldJdbc.queryForList(sql, codiHora);
     }
 
-    public int agregarHorario(String nombHora, String cortHora, String toleMarc, String toleDesc, Integer usuacrea) {
-        String sql = "EXEC sp_bart_rrhh_asis_horario_agregar ?, ?, ?, ?, ?";
-        return sigoldJdbc.queryForObject(sql, Integer.class, nombHora, cortHora, toleMarc, toleDesc, usuacrea);
+    public int agregarHorario(String nombHora, String cortHora, Integer usuacrea, Integer codiEmpr) {
+        String sql = "EXEC sp_bart_rrhh_asis_horario_agregar ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, nombHora, cortHora, usuacrea, codiEmpr);
     }
 
-    public int editarHorario(Integer codiHora, String nombHora, String cortHora, String toleMarc, String toleDesc, Integer usuamodi) {
-        String sql = "EXEC sp_bart_rrhh_asis_horario_editar ?, ?, ?, ?, ?, ?";
+    public int editarHorario(Integer codiHora, String nombHora, String cortHora, Integer usuamodi,Integer codiEmpr) {
+        String sql = "EXEC sp_bart_rrhh_asis_horario_editar ?, ?, ?, ?, ?";
 
-        return sigoldJdbc.queryForObject(sql, Integer.class, codiHora, nombHora, cortHora, toleMarc, toleDesc, usuamodi);
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiHora, nombHora, cortHora, usuamodi, codiEmpr);
     }
 
     /*====================== SECCIÓN DE GESTION DETALLE HORARIO ======================*/
@@ -98,9 +98,9 @@ public class RRHHRepository {
 
     /*====================== SECCIÓN PROGRAMACIÓN MENSUAL ======================*/
 
-    public List<Map<String, Object>> listarProgramacionMensual(String fechaInicio, String fechaFin) {
-        String sql = "EXEC sp_bart_rrhh_horario_programacion ?, ?";
-        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin);
+    public List<Map<String, Object>> listarProgramacionMensual(String fechaInicio, String fechaFin , int codiServ) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion ?, ?, ?";
+        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin, codiServ);
     }
 
     public List<Map<String, Object>> seleccionarProgramacionPorPersona(Integer codiPersona, String fechaInicio, String fechaFin) {
@@ -117,6 +117,10 @@ public class RRHHRepository {
     public List<Map<String, Object>> listarPersonal() {
         String sql = "EXEC sp_bart_rrhh_horario_personal_listar";
         return sigoldJdbc.queryForList(sql);
+    }
+    public List<Map<String, Object>> listarPersonalPorServicio(int codiServ) {
+        String sql = "EXEC [sp_bart_rrhh_horario_personal_listar_x_servicio] ?";
+        return sigoldJdbc.queryForList(sql, codiServ);
     }
 
     // 2. SELECCIONAR UNO: sp_bart_rrhh_horario_personal_seleccionar
@@ -151,6 +155,14 @@ public class RRHHRepository {
         return sigoldJdbc.queryForList(sql, fecha, idEmpleado);
     }
 
+    // 3. REPORTE MARCACIONES (Puede ser un empleado o todos)
+    public List<Map<String, Object>> reporteMarcacionesDiaria(String fecha, Integer idEmpleado) {
+        // EXEC sp_bart_rrhh_asis_asistencia_diaria '2025-12-01', 123
+        String sql = "EXEC [sp_bart_rrhh_asis_marcaciones] ?, ?";
+
+        return sigoldJdbc.queryForList(sql,  idEmpleado,fecha);
+    }
+
     /*====================== SECCIÓN EMPRESA ======================*/
 
     public List<Map<String, Object>> obtenerEmpresa() {
@@ -177,6 +189,19 @@ public class RRHHRepository {
         return sigoldJdbc.queryForList(sql, codiDepa);
     }
 
+    public int agregarDepartamento(Integer nombDepa, Integer codiEmpr) {
+        String sql = "EXEC sp_bart_rrhh_departamento_agregar ?, ?";
+
+        return sigoldJdbc.queryForObject(sql, Integer.class, nombDepa, codiEmpr);
+    }
+
+    public int modificarDepartamento(Integer codiDepa, String nombDepa, Integer codiEmpr) {
+        // Agregamos el cuarto parámetro al SQL
+        String sql = "EXEC sp_bart_rrhh_departamento_modificar ?, ?, ?";
+
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiDepa, nombDepa, codiEmpr);
+    }
+
     /*====================== SECCIÓN DE SERVICIOS ======================*/
 
     public List<Map<String, Object>> obtenerServiciosXDepartamento(int  codiDepa) {
@@ -188,5 +213,55 @@ public class RRHHRepository {
         String sql = "SELECT * FROM view_bart_rrhh_servicio WHERE codiServ = ? ";
 
         return sigoldJdbc.queryForList(sql, codiServ);
+    }
+
+    /*====================== SECCIÓN DE CARGOS ======================*/
+
+    public List<Map<String, Object>> obtenerCargos() {
+        String sql =  "exec [sp_bart_rrhh_cargo_listar]";
+        return sigoldJdbc.queryForList(sql);
+    }
+
+    public List<Map<String, Object>> seleccionaCargp(Integer codiCarg) {
+        String sql = "exec [sp_bart_rrhh_cargo_seleccionar] ?";
+
+        return sigoldJdbc.queryForList(sql, codiCarg);
+    }
+    public int agregarServicio(String nombServ, Integer codiDepa, Integer codiUsua) {
+        String sql = "EXEC sp_bart_rrhh_servicio_agregar ?, ?, ? ";
+
+        return sigoldJdbc.queryForObject(sql, Integer.class, nombServ, codiUsua);
+    }
+
+    public int editarServicio(Integer codiServ, String nombServ,Integer codiDepa, Integer codiUsua) {
+        // Agregamos el cuarto parámetro al SQL
+        String sql = "EXEC sp_bart_rrhh_servicio_editar ?, ?, ?,?";
+
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiServ, nombServ, codiDepa,codiUsua);
+    }
+
+    /*====================== SECCIÓN DE CAP ======================*/
+
+    public List<Map<String, Object>> obtenerCAPPorServicio(int codiServ) {
+        String sql =  "exec [sp_bart_rrhh_cap_listar] ?";
+        return sigoldJdbc.queryForList(sql,codiServ);
+    }
+
+    public List<Map<String, Object>> seleccionaCAPPorPersona(Integer codiPers) {
+        String sql = "exec [sp_bart_rrhh_cap_seleccionar] ?";
+
+        return sigoldJdbc.queryForList(sql, codiPers);
+    }
+
+    public int agregarCAP(int codiPers, int codiServ, int codiCarg) {
+        String sql = "EXEC [sp_bart_rrhh_cap_agregar] ?, ?, ?";
+
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, codiServ, codiCarg);
+    }
+
+    public int eliminarCAP(int codiPers) {
+        String sql = "EXEC [sp_bart_rrhh_cap_eliminar] ?";
+
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers);
     }
 }
