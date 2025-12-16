@@ -2,18 +2,14 @@ package com.bartolito.rrhh.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
-import java.sql.Clob;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class RRHHRepository  {
+public class RRHHRepository {
 
     @Autowired
     @Qualifier("sigoldJdbcTemplate")
@@ -59,16 +55,15 @@ public class RRHHRepository  {
         return sigoldJdbc.queryForList(sql, codiHora);
     }
 
-    public int agregarHorario(String nombHora, Integer usuacrea) {
-        String sql = "EXEC sp_bart_rrhh_asis_horario_agregar ?, ?";
-
-        return sigoldJdbc.queryForObject(sql, Integer.class, nombHora, usuacrea);
+    public int agregarHorario(String nombHora, String cortHora, String toleMarc, String toleDesc, Integer usuacrea) {
+        String sql = "EXEC sp_bart_rrhh_asis_horario_agregar ?, ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, nombHora, cortHora, toleMarc, toleDesc, usuacrea);
     }
 
-    public int editarHorario(Integer codiHora, String nombHora, Integer usuamodi) {
-        String sql = "EXEC sp_bart_rrhh_asis_horario_editar ?, ?, ?";
+    public int editarHorario(Integer codiHora, String nombHora, String cortHora, String toleMarc, String toleDesc, Integer usuamodi) {
+        String sql = "EXEC sp_bart_rrhh_asis_horario_editar ?, ?, ?, ?, ?, ?";
 
-        return sigoldJdbc.queryForObject(sql, Integer.class, codiHora, nombHora, usuamodi);
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiHora, nombHora, cortHora, toleMarc, toleDesc, usuamodi);
     }
 
     /*====================== SECCIÓN DE GESTION DETALLE HORARIO ======================*/
@@ -79,29 +74,80 @@ public class RRHHRepository  {
     }
 
     public List<Map<String, Object>> seleccionarHorarioDetallePorCodigo(Integer codiHora) {
-        String sql = "SELECT * FROM view_bart_rrhh_asis_horario_detalle WHERE codiHora = ?";
+        String sql = "SELECT * FROM view_bart_rrhh_asis_horario_detalle WHERE codiHora = ? AND anulTurn = 0";
 
         return sigoldJdbc.queryForList(sql, codiHora);
     }
 
-    public int agregarHorarioDetalle(Integer codiHora, Integer codiDia, Integer codiTurn, Integer anulTurn, Integer usuacrea) {
-        String sql = "EXEC sp_bart_rrhh_horario_detalle_agregar ?, ?, ?, ?, ?";
+    public int agregarHorarioDetalle(Integer codiHora, Integer codiTurn, Integer anulTurn, Integer usuacrea) {
+        String sql = "EXEC sp_bart_rrhh_horario_detalle_agregar ?, ?, ?, ?";
 
-        return sigoldJdbc.queryForObject(sql, Integer.class, codiHora, codiDia, codiTurn, anulTurn, usuacrea);
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiHora, codiTurn, anulTurn, usuacrea);
     }
 
-    public int editarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiDia, Integer codiTurn, Integer anulTurn, Integer usuamodi) {
-        String sql = "EXEC sp_bart_rrhh_horario_detalle_editar ?, ?, ?, ?, ?, ?";
+    public int editarHorarioDetalle(Integer codiHoraDeta,
+                                    Integer codiHora,
+                                    Integer codiTurn,
+                                    Integer anulTurn,
+                                    Integer usuamodi) {
+        String sql = "EXEC sp_bart_rrhh_horario_detalle_editar ?, ?, ?, ?, ?";
 
-        return sigoldJdbc.queryForObject(sql, Integer.class, codiHoraDeta, codiHora, codiDia, codiTurn, anulTurn, usuamodi);
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiHoraDeta, codiHora, codiTurn, anulTurn, usuamodi);
     }
 
 
-    /*====================== SECCIÓN DE GESTION DETALLE SEMANAL ======================*/
+    /*====================== SECCIÓN PROGRAMACIÓN MENSUAL ======================*/
 
-    public List<Map<String, Object>> listarHorarioSemanal() {
-        String sql = "SELECT * FROM view_bart_rrhh_asis_horario_semanal";
+    public List<Map<String, Object>> listarProgramacionMensual(String fechaInicio, String fechaFin) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion ?, ?";
+        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin);
+    }
 
+    public List<Map<String, Object>> seleccionarProgramacionPorPersona(Integer codiPersona, String fechaInicio, String fechaFin) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_seleccionar ?, ?, ?";
+        return sigoldJdbc.queryForList(sql, codiPersona, fechaInicio, fechaFin);
+    }
+
+    public int agregarProgramacion(Integer codiHora, Integer codiPers, String fechProg) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_agregar ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiHora, codiPers, fechProg);
+    }
+
+    // 1. LISTAR TODOS: sp_bart_rrhh_horario_personal_listar
+    public List<Map<String, Object>> listarPersonal() {
+        String sql = "EXEC sp_bart_rrhh_horario_personal_listar";
         return sigoldJdbc.queryForList(sql);
+    }
+
+    // 2. SELECCIONAR UNO: sp_bart_rrhh_horario_personal_seleccionar
+    public List<Map<String, Object>> seleccionarPersonal(Integer id) {
+        String sql = "EXEC sp_bart_rrhh_horario_personal_seleccionar ?";
+        return sigoldJdbc.queryForList(sql, id);
+    }
+
+    public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer anulPersHora) {
+        // Agregamos el cuarto parámetro al SQL
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_modificar ?, ?, ?, ?";
+
+        return sigoldJdbc.queryForObject(sql, Integer.class, nuevoCodiHora, codiPers, fechProg, anulPersHora);
+    }
+
+    /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
+
+    // 1. REPORTE MENSUAL (Columnas dinámicas)
+    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin) {
+        // EXEC sp_bart_rrhh_asis_asistencia_mensual '2025-12-01','2025-12-31'
+        String sql = "EXEC sp_bart_rrhh_asis_asistencia_mensual ?, ?";
+
+        // JdbcTemplate mapeará las columnas de fechas (2025-12-01, etc.) automáticamente al Map
+        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin);
+    }
+
+    // 2. REPORTE DIARIO (Puede ser un empleado o todos)
+    public List<Map<String, Object>> reporteAsistenciaDiaria(String fecha, Integer idEmpleado) {
+        // EXEC sp_bart_rrhh_asis_asistencia_diaria '2025-12-01', 123
+        String sql = "EXEC sp_bart_rrhh_asis_asistencia_diaria ?, ?";
+
+        return sigoldJdbc.queryForList(sql, fecha, idEmpleado);
     }
 }

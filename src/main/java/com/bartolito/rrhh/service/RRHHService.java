@@ -60,13 +60,13 @@ public class RRHHService {
         return results.get(0);
     }
 
-    public int agregarHorario(String nombHora, Integer usuacrea) {
-        return repository.agregarHorario(nombHora, usuacrea);
+    public int agregarHorario(String nombHora, String cortHora, String toleMarc, String toleDesc, Integer usuacrea) {
+        return repository.agregarHorario(nombHora, cortHora, toleMarc, toleDesc, usuacrea);
     }
 
-    public void editarHorario(Integer codiHora, String nombHora, Integer usuamodi) {
+    public void editarHorario(Integer codiHora, String nombHora, String cortHora, String toleMarc, String toleDesc, Integer usuamodi) {
 
-        int filasAfectadas = repository.editarHorario(codiHora, nombHora, usuamodi);
+        int filasAfectadas = repository.editarHorario(codiHora, nombHora, cortHora, toleMarc, toleDesc, usuamodi);
 
         if (filasAfectadas == 0) {
             throw new NoSuchElementException("No se pudo editar el horario. El código " + codiHora + " no existe.");
@@ -83,38 +83,92 @@ public class RRHHService {
 
         List<Map<String, Object>> results = repository.seleccionarHorarioDetallePorCodigo(codiHora);
 
-//        if (results.isEmpty()) {
-//            throw new NoSuchElementException("No se encontraron detalles para el horario con código " + codiHora);
-//        }
-
         return results;
     }
 
-    public int agregarHorarioDetalle(Integer codiHora, Integer codiDia, Integer codiTurn, Integer anulTurn, Integer usuacrea) {
-        return repository.agregarHorarioDetalle(codiHora, codiDia, codiTurn, anulTurn, usuacrea);
+    public int agregarHorarioDetalle(Integer codiHora,
+                                     Integer codiTurn,
+                                     Integer anulTurn,
+                                     Integer usuacrea) {
+        return repository.agregarHorarioDetalle(codiHora, codiTurn, anulTurn, usuacrea);
     }
 
-    public void editarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiDia, Integer codiTurn, Integer anulTurn, Integer usuamodi) {
+    public void editarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiTurn, Integer anulTurn, Integer usuamodi) {
 
-        int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiDia, codiTurn, anulTurn, usuamodi);
+        int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, anulTurn, usuamodi);
 
         if (filasAfectadas == 0) {
             throw new NoSuchElementException("No se pudo editar el detalle. El código " + codiHoraDeta + " no existe.");
         }
     }
 
-    public void eliminarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiDia, Integer codiTurn, Integer usuamodi) {
+    public void eliminarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiTurn, Integer usuamodi) {
 
-        int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiDia, codiTurn, 1, usuamodi);
+        int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, 1, usuamodi);
 
         if (filasAfectadas == 0) {
             throw new NoSuchElementException("No se pudo eliminar (anular) el detalle. El código " + codiHoraDeta + " no existe.");
         }
     }
 
-    /*====================== SECCIÓN DE GESTION DETALLE SEMANAL ======================*/
+    /*====================== SECCIÓN PROGRAMACIÓN MENSUAL ======================*/
 
-    public List<Map<String, Object>> listarHorarioSemanal() {
-        return repository.listarHorarioSemanal();
+    public List<Map<String, Object>> listarProgramacionMensual(String inicio, String fin) {
+        return repository.listarProgramacionMensual(inicio, fin);
     }
+
+    public List<Map<String, Object>> seleccionarProgramacionPorPersona(Integer codiPersona, String fechaInicio, String fechaFin) {
+        return repository.seleccionarProgramacionPorPersona(codiPersona, fechaInicio, fechaFin);
+    }
+
+    public int agregarProgramacion(Integer codiHora, Integer codiPers, String fechProg) {
+        return repository.agregarProgramacion(codiHora, codiPers, fechProg);
+    }
+
+    public List<Map<String, Object>> listarPersonal() {
+        return repository.listarPersonal();
+    }
+
+    public Map<String, Object> seleccionarPersonal(Integer id) {
+        List<Map<String, Object>> results = repository.seleccionarPersonal(id);
+
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El personal con ID " + id + " no fue encontrado.");
+        }
+        return results.get(0);
+    }
+
+    public void modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer anulPersHora) {
+
+        // Recibimos el int directamente
+        int filasAfectadas = repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, anulPersHora);
+
+        // Validamos si se actualizó algo
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo actualizar la programación. Verifique que la persona y la fecha existan.");
+        }
+    }
+
+    public void eliminarProgramacion(Integer codiHora, Integer codiPers, String fechProg) {
+
+        int filasAfectadas = repository.modificarProgramacion(codiHora, codiPers, fechProg, 1);
+
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se encontró el registro para eliminar.");
+        }
+    }
+
+    /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
+
+    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin) {
+        return repository.reporteAsistenciaMensual(fechaInicio, fechaFin);
+    }
+
+    public List<Map<String, Object>> reporteAsistenciaDiaria(String fecha, Integer idEmpleado) {
+        // Si no envían ID, asumimos 0 (para que el SP traiga a todos)
+        Integer idFinal = (idEmpleado != null) ? idEmpleado : 0;
+
+        return repository.reporteAsistenciaDiaria(fecha, idFinal);
+    }
+
 }

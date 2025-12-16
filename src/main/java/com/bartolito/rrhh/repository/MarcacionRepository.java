@@ -12,7 +12,7 @@ import java.util.Map;
 public class MarcacionRepository {
 
     @Autowired
-    @Qualifier("wdmsDataSource")
+    @Qualifier("wdmsJdbcTemplate")
     private JdbcTemplate wdmsJdbc;
 
 
