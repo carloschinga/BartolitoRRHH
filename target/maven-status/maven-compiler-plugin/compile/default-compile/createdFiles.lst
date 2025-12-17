@@ -1,0 +1,10 @@
+com\bartolito\rrhh\config\CorsConfig.class
+com\bartolito\rrhh\service\RRHHService.class
+com\bartolito\rrhh\repository\RRHHRepository.class
+com\bartolito\rrhh\util\JwtUtil.class
+com\bartolito\rrhh\util\SecurityConfig.class
+com\bartolito\rrhh\controller\RRHHController.class
+com\bartolito\rrhh\repository\MarcacionRepository.class
+com\bartolito\rrhh\RRHHApplication.class
+com\bartolito\rrhh\config\MultiDataSourceConfig.class
+com\bartolito\rrhh\util\JwtRRHHFilter.class
