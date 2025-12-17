@@ -118,6 +118,23 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/horarios/listarturnos/{codiEmpr}")
+    public ResponseEntity<Map<String, Object>> obtenerHorarioTurnos(@PathVariable Integer codiEmpr) {
+
+        List<Map<String, Object>> result = service.obtenerHorarioPorEmpresaTurnos(codiEmpr);
+
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("horario", result);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
     @GetMapping("/horarios/seleccionar/{codiHora}")
     public ResponseEntity<Map<String, Object>> seleccionarHorarioPorCodigo(@PathVariable Integer codiHora) {
 

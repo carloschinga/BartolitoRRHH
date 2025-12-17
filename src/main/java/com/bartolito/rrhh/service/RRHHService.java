@@ -50,6 +50,10 @@ public class RRHHService {
         return repository.obtenerHorarioPorEmpresa(codiEmpr);
     }
 
+    public List<Map<String, Object>> obtenerHorarioPorEmpresaTurnos(int codiEmpr) {
+        return repository.obtenerHorarioPorEmpresaTurnos(codiEmpr);
+    }
+
     public Map<String, Object> seleccionarHorarioPorCodigo(int codiHora) {
         List<Map<String, Object>> results = repository.seleccionarHorarioPorCodigo(codiHora);
 

@@ -49,6 +49,11 @@ public class RRHHRepository {
         return sigoldJdbc.queryForList(sql,codiEmpr);
     }
 
+    public List<Map<String, Object>> obtenerHorarioPorEmpresaTurnos(int codiEmpr) {
+        String sql = "EXEC [sp_bart_rrhh_asis_horario_listar_turnos] ?";
+        return sigoldJdbc.queryForList(sql,codiEmpr);
+    }
+
     public List<Map<String, Object>> seleccionarHorarioPorCodigo(int codiHora) {
         String sql = "EXEC sp_bart_rrhh_asis_horario_seleccionar ?";
 
