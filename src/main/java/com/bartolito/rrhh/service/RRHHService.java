@@ -1,342 +1,290 @@
 package com.bartolito.rrhh.service;
 
+import com.bartolito.rrhh.repository.RRHHRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.springframework.stereotype.Service;
-
-import com.bartolito.rrhh.repository.RRHHRepository;
 
 @Service
 public class RRHHService {
 
-	private final RRHHRepository repository;
+    private final RRHHRepository repository;
 
-	public RRHHService(RRHHRepository repository) {
-		this.repository = repository;
-	}
+    public RRHHService(RRHHRepository repository) {
+        this.repository = repository;
+    }
 
-	public List<Map<String, Object>> obtenerdTurnos() {
-		return repository.obtenerTurnos();
-	}
+    public List<Map<String, Object>> obtenerdTurnos() {
+        return repository.obtenerTurnos();
+    }
 
-	public Map<String, Object> seleccionarTurnoPorCodigo(int codiTurn) {
-		List<Map<String, Object>> results = repository.seleccionarTurnoPorCodigo(codiTurn);
+    public Map<String, Object> seleccionarTurnoPorCodigo(int codiTurn) {
+        List<Map<String, Object>> results = repository.seleccionarTurnoPorCodigo(codiTurn);
 
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El turno con código " + codiTurn + " no fue encontrado.");
-			// return Collections.singletonMap("mensaje", "No existe turno con código " +
-			// codiTurn);
-		}
-		return results.get(0);
-	}
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El turno con código " + codiTurn + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
 
-	public int agregarTurno(String nombTurn, String ingrTurn, String saldTurn) {
-		return repository.agregarTurno(nombTurn, ingrTurn, saldTurn);
-	}
+    public int agregarTurno(String nombTurn, String ingrTurn, String saldTurn) {
+        return repository.agregarTurno(nombTurn, ingrTurn, saldTurn);
+    }
 
-	public void editarTurno(int codiTurn, String nombTurn, String ingrTurn, String saldTurn) {
+    public void editarTurno(int codiTurn, String nombTurn, String ingrTurn, String saldTurn) {
 
-		int filasAfectadas = repository.editarTurno(codiTurn, nombTurn, ingrTurn, saldTurn);
+        int filasAfectadas = repository.editarTurno(codiTurn, nombTurn, ingrTurn, saldTurn);
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el turno. El código " + codiTurn + " no existe.");
-		}
-	}
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el turno. El código " + codiTurn + " no existe.");
+        }
+    }
 
-	/*
-	 * ====================== SECCIÓN DE LA GESTIÓN HORARIO ======================
-	 */
+    /*====================== SECCIÓN DE LA GESTIÓN HORARIO ======================*/
 
-	public List<Map<String, Object>> obtenerHorarioPorEmpresa(int codiEmpr) {
-		return repository.obtenerHorarioPorEmpresa(codiEmpr);
-	}
+    public List<Map<String, Object>> obtenerHorarioPorEmpresa(int codiEmpr) {
+        return repository.obtenerHorarioPorEmpresa(codiEmpr);
+    }
 
-	public Map<String, Object> seleccionarHorarioPorCodigo(int codiHora) {
-		List<Map<String, Object>> results = repository.seleccionarHorarioPorCodigo(codiHora);
+    public List<Map<String, Object>> obtenerHorarioPorEmpresaTurnos(int codiEmpr) {
+        return repository.obtenerHorarioPorEmpresaTurnos(codiEmpr);
+    }
 
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El horario con código " + codiHora + " no fue encontrado.");
-			// return Collections.singletonMap("mensaje", "No existe turno con código " +
-			// codiTurn);
-		}
-		return results.get(0);
-	}
+    public Map<String, Object> seleccionarHorarioPorCodigo(int codiHora) {
+        List<Map<String, Object>> results = repository.seleccionarHorarioPorCodigo(codiHora);
 
-	public int agregarHorario(String nombHora, String cortHora, Integer usuacrea, Integer codiEmpr) {
-		return repository.agregarHorario(nombHora, cortHora, usuacrea, codiEmpr);
-	}
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El horario con código " + codiHora + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
 
-	public void editarHorario(Integer codiHora, String nombHora, String cortHora, Integer usuamodi, Integer codiEmpr) {
+    public int agregarHorario(String nombHora, String cortHora,  Integer usuacrea, Integer codiEmpr) {
+        return repository.agregarHorario(nombHora, cortHora, usuacrea, codiEmpr);
+    }
 
-		int filasAfectadas = repository.editarHorario(codiHora, nombHora, cortHora, usuamodi, codiEmpr);
+    public void editarHorario(Integer codiHora, String nombHora, String cortHora, Integer usuamodi, Integer codiEmpr) {
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el horario. El código " + codiHora + " no existe.");
-		}
-	}
+        int filasAfectadas = repository.editarHorario(codiHora, nombHora, cortHora,usuamodi, codiEmpr);
 
-	/*
-	 * ====================== SECCIÓN DE GESTION DETALLE HORARIO
-	 * ======================
-	 */
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el horario. El código " + codiHora + " no existe.");
+        }
+    }
 
-	public List<Map<String, Object>> obtenerHorarioDetalle() {
-		return repository.obtenerHorarioDetalle();
-	}
+    /*====================== SECCIÓN DE GESTION DETALLE HORARIO ======================*/
 
-	public List<Map<String, Object>> seleccionarHorarioDetallePorCodigo(Integer codiHora) {
+    public List<Map<String, Object>> obtenerHorarioDetalle() {
+        return repository.obtenerHorarioDetalle();
+    }
 
-		List<Map<String, Object>> results = repository.seleccionarHorarioDetallePorCodigo(codiHora);
+    public List<Map<String, Object>> seleccionarHorarioDetallePorCodigo(Integer codiHora) {
 
-		return results;
-	}
+        List<Map<String, Object>> results = repository.seleccionarHorarioDetallePorCodigo(codiHora);
 
-	public int agregarHorarioDetalle(Integer codiHora, Integer codiTurn, Integer anulTurn, Integer usuacrea) {
-		return repository.agregarHorarioDetalle(codiHora, codiTurn, anulTurn, usuacrea);
-	}
+        return results;
+    }
 
-	public void editarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiTurn, Integer anulTurn,
-			Integer usuamodi) {
+    public int agregarHorarioDetalle(Integer codiHora,
+                                     Integer codiTurn,
+                                     Integer anulTurn,
+                                     Integer usuacrea) {
+        return repository.agregarHorarioDetalle(codiHora, codiTurn, anulTurn, usuacrea);
+    }
 
-		int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, anulTurn, usuamodi);
+    public void editarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiTurn, Integer anulTurn, Integer usuamodi) {
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el detalle. El código " + codiHoraDeta + " no existe.");
-		}
-	}
+        int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, anulTurn, usuamodi);
 
-	public void eliminarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiTurn, Integer usuamodi) {
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el detalle. El código " + codiHoraDeta + " no existe.");
+        }
+    }
 
-		int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, 1, usuamodi);
+    public void eliminarHorarioDetalle(Integer codiHoraDeta, Integer codiHora, Integer codiTurn, Integer usuamodi) {
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException(
-					"No se pudo eliminar (anular) el detalle. El código " + codiHoraDeta + " no existe.");
-		}
-	}
+        int filasAfectadas = repository.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, 1, usuamodi);
 
-	/* ====================== SECCIÓN PROGRAMACIÓN MENSUAL ====================== */
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo eliminar (anular) el detalle. El código " + codiHoraDeta + " no existe.");
+        }
+    }
 
-	public List<Map<String, Object>> listarProgramacionMensual(String inicio, String fin, int codiServ) {
-		return repository.listarProgramacionMensual(inicio, fin, codiServ);
-	}
+    /*====================== SECCIÓN PROGRAMACIÓN MENSUAL ======================*/
 
-	public List<Map<String, Object>> seleccionarProgramacionPorPersona(Integer codiPersona, String fechaInicio,
-			String fechaFin) {
-		return repository.seleccionarProgramacionPorPersona(codiPersona, fechaInicio, fechaFin);
-	}
+    public List<Map<String, Object>> listarProgramacionMensual(String inicio, String fin, int codiServ) {
+        return repository.listarProgramacionMensual(inicio, fin, codiServ);
+    }
 
-	public int agregarProgramacion(Integer codiHora, Integer codiPers, String fechProg) {
-		return repository.agregarProgramacion(codiHora, codiPers, fechProg);
-	}
+    public List<Map<String, Object>> seleccionarProgramacionPorPersona(Integer codiPersona, String fechaInicio, String fechaFin) {
+        return repository.seleccionarProgramacionPorPersona(codiPersona, fechaInicio, fechaFin);
+    }
 
-	public List<Map<String, Object>> listarPersonal() {
-		return repository.listarPersonal();
-	}
+    public int agregarProgramacion(Integer codiHora, Integer codiPers, String fechProg) {
+        return repository.agregarProgramacion(codiHora, codiPers, fechProg);
+    }
 
-	public List<Map<String, Object>> listarPersonalPorServicio(int codiServ) {
-		return repository.listarPersonalPorServicio(codiServ);
-	}
+    public List<Map<String, Object>> listarPersonal() {
+        return repository.listarPersonal();
+    }
+    public List<Map<String, Object>> listarPersonalPorServicio(int codiServ) {
+        return repository.listarPersonalPorServicio(codiServ);
+    }
 
-	public Map<String, Object> seleccionarPersonal(Integer id) {
-		List<Map<String, Object>> results = repository.seleccionarPersonal(id);
+    public Map<String, Object> seleccionarPersonal(Integer id) {
+        List<Map<String, Object>> results = repository.seleccionarPersonal(id);
 
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El personal con ID " + id + " no fue encontrado.");
-		}
-		return results.get(0);
-	}
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El personal con ID " + id + " no fue encontrado.");
+        }
+        return results.get(0);
+    }
 
-	public void modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer anulPersHora) {
+    public void modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer anulPersHora) {
 
-		// Recibimos el int directamente
-		int filasAfectadas = repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, anulPersHora);
+        // Recibimos el int directamente
+        int filasAfectadas = repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, anulPersHora);
 
-		// Validamos si se actualizó algo
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException(
-					"No se pudo actualizar la programación. Verifique que la persona y la fecha existan.");
-		}
-	}
+        // Validamos si se actualizó algo
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo actualizar la programación. Verifique que la persona y la fecha existan.");
+        }
+    }
 
-	public void eliminarProgramacion(Integer codiHora, Integer codiPers, String fechProg) {
+    public void eliminarProgramacion(Integer codiHora, Integer codiPers, String fechProg) {
 
-		int filasAfectadas = repository.modificarProgramacion(codiHora, codiPers, fechProg, 1);
+        int filasAfectadas = repository.modificarProgramacion(codiHora, codiPers, fechProg, 1);
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se encontró el registro para eliminar.");
-		}
-	}
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se encontró el registro para eliminar.");
+        }
+    }
 
-	/*
-	 * ====================== SECCIÓN REPORTES DE ASISTENCIA ======================
-	 */
+    /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
 
-	public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin, int codiServ) {
-		return repository.reporteAsistenciaMensual(fechaInicio, fechaFin, codiServ);
-	}
+    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin, int codiServ) {
+        return repository.reporteAsistenciaMensual(fechaInicio, fechaFin, codiServ);
+    }
 
-	public List<Map<String, Object>> reporteAsistenciaDiaria(String fecha, Integer idEmpleado) {
-		// Si no envían ID, asumimos 0 (para que el SP traiga a todos)
-		Integer idFinal = (idEmpleado != null) ? idEmpleado : 0;
+    public List<Map<String, Object>> reporteAsistenciaDiaria(String fecha, Integer idEmpleado) {
+        // Si no envían ID, asumimos 0 (para que el SP traiga a todos)
+        Integer idFinal = (idEmpleado != null) ? idEmpleado : 0;
 
-		return repository.reporteAsistenciaDiaria(fecha, idFinal);
-	}
+        return repository.reporteAsistenciaDiaria(fecha, idFinal);
+    }
+    public List<Map<String, Object>> reporteMarcacionesDiaria(String fecha, Integer idEmpleado) {
+        return repository.reporteMarcacionesDiaria(fecha, idEmpleado);
+    }
 
-	public List<Map<String, Object>> reporteMarcacionesDiaria(String fecha, Integer idEmpleado) {
-		return repository.reporteMarcacionesDiaria(fecha, idEmpleado);
-	}
 
-	/* ====================== SECCIÓN EMPRESA ====================== */
+    /*====================== SECCIÓN EMPRESA ======================*/
 
-	public List<Map<String, Object>> obtenerEmpresas() {
-		return repository.obtenerEmpresa();
-	}
+    public List<Map<String, Object>> obtenerEmpresas() {
+        return repository.obtenerEmpresa();
+    }
 
-	public Map<String, Object> seleccionarEmpresaPorCodigo(int codiEmpr) {
-		List<Map<String, Object>> results = repository.seleccionarEmpresa(codiEmpr);
+    public Map<String, Object> seleccionarEmpresaPorCodigo(int codiEmpr) {
+        List<Map<String, Object>> results = repository.seleccionarEmpresa(codiEmpr);
 
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El Empresa con código " + codiEmpr + " no fue encontrado.");
-			// return Collections.singletonMap("mensaje", "No existe turno con código " +
-			// codiTurn);
-		}
-		return results.get(0);
-	}
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Empresa con código " + codiEmpr + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
 
-	public int agregarEmpresa(String nombEmpr, String toleMarc, String toleDesc) {
-		return repository.agregarEmpresa(nombEmpr, toleMarc, toleDesc);
-	}
 
-	public void modificarEmpresa(Integer codiEmpr, String nombEmpr, String toleMarc, String toleDesc) {
+    /*====================== SECCIÓN DEPARTAMENTO ======================*/
 
-		int filasAfectadas = repository.modificarEmpresa(codiEmpr, nombEmpr, toleMarc, toleDesc);
+    public List<Map<String, Object>> obtenerDepartamentoPorEmpresa(int codiEmpr) {
+        return repository.obtenerDepartamentoXEmpresa(codiEmpr);
+    }
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiEmpr + " no existe.");
-		}
-	}
+    public Map<String, Object> seleccionarDepartamentoPorCodigo(int codiDepar) {
+        List<Map<String, Object>> results = repository.seleccionarEmpresa(codiDepar);
 
-	/* ====================== SECCIÓN DEPARTAMENTO ====================== */
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Departamento con código " + codiDepar + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
 
-	public List<Map<String, Object>> obtenerDepartamentoPorEmpresa(int codiEmpr) {
-		return repository.obtenerDepartamentoXEmpresa(codiEmpr);
-	}
 
-	public Map<String, Object> seleccionarDepartamentoPorCodigo(int codiDepar) {
-		List<Map<String, Object>> results = repository.seleccionarEmpresa(codiDepar);
+    /*====================== SECCIÓN SERVICIOS ======================*/
 
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El Departamento con código " + codiDepar + " no fue encontrado.");
-			// return Collections.singletonMap("mensaje", "No existe turno con código " +
-			// codiTurn);
-		}
-		return results.get(0);
-	}
+    public List<Map<String, Object>> obtenerServiciosPorDepartamento(int codiServ) {
+        return repository.obtenerServiciosXDepartamento(codiServ);
+    }
 
-	public int agregarDepartamento(String nombDepa, Integer codiEmpr) {
-		return repository.agregarDepartamento(nombDepa, codiEmpr);
-	}
+    public Map<String, Object> seleccionarServiciosPorCodigo(int codiServ) {
+        List<Map<String, Object>> results = repository.seleccionaServicioPorCodigo(codiServ);
 
-	public void modificarDepartamento(Integer codiDepa, String nombDepa, Integer codiEmpr) {
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Servicio con código " + codiServ + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
+    public int agregarServicio(String nombServ, int codiDepa, int codiUsua) {
+        return repository.agregarServicio(nombServ, codiDepa, codiUsua);
+    }
 
-		int filasAfectadas = repository.modificarDepartamento(codiDepa, nombDepa, codiEmpr);
+    public void editarServicio(int codiServ, String nombServ, int codiDepa, int codiUsua) {
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiDepa + " no existe.");
-		}
-	}
+        int filasAfectadas = repository.editarServicio(codiServ, nombServ, codiDepa, codiUsua);
 
-	/* ====================== SECCIÓN SERVICIOS ====================== */
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiServ + " no existe.");
+        }
+    }
 
-	public List<Map<String, Object>> obtenerServiciosPorDepartamento(int codiServ) {
-		return repository.obtenerServiciosXDepartamento(codiServ);
-	}
+    /*====================== SECCIÓN CARGO ======================*/
 
-	public Map<String, Object> seleccionarServiciosPorCodigo(int codiServ) {
-		List<Map<String, Object>> results = repository.seleccionaServicioPorCodigo(codiServ);
+    public List<Map<String, Object>> obtenerCargos() {
+        return repository.obtenerCargos();
+    }
 
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El Servicio con código " + codiServ + " no fue encontrado.");
-			// return Collections.singletonMap("mensaje", "No existe turno con código " +
-			// codiTurn);
-		}
-		return results.get(0);
-	}
+    public Map<String, Object> seleccionarCargosPorCodigo(int codiCarg) {
+        List<Map<String, Object>> results = repository.seleccionarEmpresa(codiCarg);
 
-	public int agregarServicio(String nombServ, int codiDepa, int codiUsua) {
-		return repository.agregarServicio(nombServ, codiDepa, codiUsua);
-	}
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Cargo con código " + codiCarg + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
+    /*====================== SECCIÓN CAP ======================*/
 
-	public void editarServicio(Integer codiServ, String nombServ, Integer codiDepa, Integer anulServ,
-			Integer usuamodi) {
+    public List<Map<String, Object>> obtenerCAPPorServicio( int codiServ) {
+        return repository.obtenerCAPPorServicio(codiServ);
+    }
 
-		int filasAfectadas = repository.editarServicio(codiServ, nombServ, codiDepa, anulServ, usuamodi);
+    public Map<String, Object> seleccionarCAPPorPersona(int codiPers) {
+        List<Map<String, Object>> results = repository.seleccionaCAPPorPersona(codiPers);
 
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiServ + " no existe.");
-		}
-	}
+        if (results.isEmpty()) {
+            throw new NoSuchElementException("El Cargo con código " + codiPers + " no fue encontrado.");
+            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+        }
+        return results.get(0);
+    }
 
-	/* ====================== SECCIÓN CARGO ====================== */
+    public int agregarCAP(int codiPers, int codiServ, int codiCarg) {
+        return repository.agregarCAP(codiPers, codiServ, codiCarg);
+    }
 
-	public List<Map<String, Object>> obtenerCargos() {
-		return repository.obtenerCargos();
-	}
+    public void eliminarCAP(int codiPers) {
 
-	public Map<String, Object> seleccionarCargosPorCodigo(int codiCarg) {
-		List<Map<String, Object>> results = repository.seleccionarEmpresa(codiCarg);
+        int filasAfectadas = repository.eliminarCAP(codiPers);
 
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El Cargo con código " + codiCarg + " no fue encontrado.");
-			// return Collections.singletonMap("mensaje", "No existe turno con código " +
-			// codiTurn);
-		}
-		return results.get(0);
-	}
-
-	public int agregarCargo(String nombCarg) {
-		return repository.agregarCargo(nombCarg);
-	}
-
-	public void modificarCargo(Integer codiCarg, String nombCarg) {
-
-		int filasAfectadas = repository.editarCargo(codiCarg, nombCarg);
-
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiCarg + " no existe.");
-		}
-	}
-
-	/* ====================== SECCIÓN CAP ====================== */
-
-	public List<Map<String, Object>> obtenerCAPPorServicio(int codiServ) {
-		return repository.obtenerCAPPorServicio(codiServ);
-	}
-
-	public Map<String, Object> seleccionarCAPPorPersona(int codiPers) {
-		List<Map<String, Object>> results = repository.seleccionaCAPPorPersona(codiPers);
-
-		if (results.isEmpty()) {
-			throw new NoSuchElementException("El Cargo con código " + codiPers + " no fue encontrado.");
-			// return Collections.singletonMap("mensaje", "No existe turno con código " +
-			// codiTurn);
-		}
-		return results.get(0);
-	}
-
-	public int agregarCAP(int codiPers, int codiServ, int codiCarg) {
-		return repository.agregarCAP(codiPers, codiServ, codiCarg);
-	}
-
-	public void eliminarCAP(int codiPers) {
-
-		int filasAfectadas = repository.eliminarCAP(codiPers);
-
-		if (filasAfectadas == 0) {
-			throw new NoSuchElementException("No se pudo editar el persona. El código " + codiPers + " no existe.");
-		}
-	}
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el persona. El código " + codiPers + " no existe.");
+        }
+    }
 }
