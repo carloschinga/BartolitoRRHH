@@ -118,23 +118,6 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/horarios/listarturnos/{codiEmpr}")
-    public ResponseEntity<Map<String, Object>> obtenerHorarioTurnos(@PathVariable Integer codiEmpr) {
-
-        List<Map<String, Object>> result = service.obtenerHorarioPorEmpresaTurnos(codiEmpr);
-
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("horario", result);
-
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
-
-        return ResponseEntity.ok(response);
-    }
-
-
-
     @GetMapping("/horarios/seleccionar/{codiHora}")
     public ResponseEntity<Map<String, Object>> seleccionarHorarioPorCodigo(@PathVariable Integer codiHora) {
 
@@ -444,7 +427,7 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
-    /*====================== SECCIÓN EMPRESA ======================*/
+    /* ====================== SECCIÓN EMPRESA ====================== */
     @GetMapping("/empresas/listar")
     public ResponseEntity<Map<String, Object>> obtenerEmpresa() {
 
@@ -490,8 +473,41 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/empresas/agregar")
+    public ResponseEntity<Map<String, Object>> agregarEmpresas(@RequestBody Map<String, String> requestBody) {
 
-    /*====================== SECCIÓN DEPARTAMENTO ======================*/
+        String nombEmpr = requestBody.get("nombEmpr").toString();
+        String toleMarc = requestBody.get("toleMarc").toString();
+        String toleDesc = requestBody.get("toleDesc").toString();
+
+        int nuevoId = service.agregarEmpresa(nombEmpr, toleMarc, toleDesc);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Empresa guardada exitosamente.");
+        response.put("nuevoId", nuevoId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/empresas/modificar")
+    public ResponseEntity<Map<String, Object>> modificarEmpresas(@RequestBody Map<String, String> requestBody) {
+
+        int codiEmpr = Integer.parseInt(requestBody.get("codiEmpr"));
+        String nombEmpr = requestBody.get("nombEmpr").toString();
+        String toleMarc = requestBody.get("toleMarc").toString();
+        String toleDesc = requestBody.get("toleDesc").toString();
+
+        service.modificarEmpresa(codiEmpr, nombEmpr, toleMarc, toleDesc);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Empresa modificada exitosamente.");
+
+        return ResponseEntity.ok(response);
+    }
+
+    /* ====================== SECCIÓN DEPARTAMENTO ====================== */
     @GetMapping("/departamentos/listar/{codiEmpr}")
     public ResponseEntity<Map<String, Object>> obtenerDepartamento(@PathVariable Integer codiEmpr) {
 
@@ -537,8 +553,39 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/departamentos/agregar")
+    public ResponseEntity<Map<String, Object>> agregarDepartamentos(@RequestBody Map<String, String> requestBody) {
 
-    /*====================== SECCIÓN SERVICIO ======================*/
+        String nombDepa = requestBody.get("nombDepa").toString();
+        int codiEmpr = Integer.parseInt(requestBody.get("codiEmpr"));
+
+        int nuevoId = service.agregarDepartamento(nombDepa, codiEmpr);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Departamento guardado exitosamente.");
+        response.put("nuevoId", nuevoId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/departamentos/modificar")
+    public ResponseEntity<Map<String, Object>> modificarDepartamentos(@RequestBody Map<String, String> requestBody) {
+
+        int codiDepa = Integer.parseInt(requestBody.get("codiDepa"));
+        String nombDepa = requestBody.get("nombDepa").toString();
+        int codiEmpr = Integer.parseInt(requestBody.get("codiEmpr"));
+
+        service.modificarDepartamento(codiDepa, nombDepa, codiEmpr);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Departamento modificado exitosamente.");
+
+        return ResponseEntity.ok(response);
+    }
+
+    /* ====================== SECCIÓN SERVICIO ====================== */
     @GetMapping("/servicios/listar/{codiDepa}")
     public ResponseEntity<Map<String, Object>> obtenerServicios(@PathVariable Integer codiDepa) {
 
@@ -584,7 +631,42 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
-    /*====================== SECCIÓN CARGO ======================*/
+    @PostMapping("/servicios/agregar")
+    public ResponseEntity<Map<String, Object>> agregarServicios(@RequestBody Map<String, String> requestBody) {
+
+        String nombServ = requestBody.get("nombServ").toString();
+        int codiDepa = Integer.parseInt(requestBody.get("codiDepa"));
+        int codiUsua = Integer.parseInt(requestBody.get("codiUsua"));
+
+        int nuevoId = service.agregarServicio(nombServ, codiDepa, codiUsua);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Servicio guardado exitosamente.");
+        response.put("nuevoId", nuevoId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/servicios/modificar")
+    public ResponseEntity<Map<String, Object>> modificarServicios(@RequestBody Map<String, String> requestBody) {
+
+        int codiServ = Integer.parseInt(requestBody.get("codiServ"));
+        String nombServ = requestBody.get("nombServ").toString();
+        int codiDepa = Integer.parseInt(requestBody.get("codiDepa"));
+        int anulServ = Integer.parseInt(requestBody.get("anulServ"));
+        int usuamodi = Integer.parseInt(requestBody.get("usuamodi"));
+
+        service.editarServicio(codiServ, nombServ, codiDepa, anulServ, usuamodi);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Servicio modificado exitosamente.");
+
+        return ResponseEntity.ok(response);
+    }
+
+    /* ====================== SECCIÓN CARGO ====================== */
     @GetMapping("/cargos/listar")
     public ResponseEntity<Map<String, Object>> obtenerCargos() {
 
@@ -626,6 +708,36 @@ public class RRHHController {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");
         response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/cargos/agregar")
+    public ResponseEntity<Map<String, Object>> agregarCargo(@RequestBody Map<String, String> requestBody) {
+
+        String nombCarg = requestBody.get("nombCarg").toString();
+
+        int nuevoId = service.agregarCargo(nombCarg);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Cargo guardado exitosamente.");
+        response.put("nuevoId", nuevoId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/cargos/modificar")
+    public ResponseEntity<Map<String, Object>> modificarCargo(@RequestBody Map<String, String> requestBody) {
+
+        int codiCarg = Integer.parseInt(requestBody.get("codiCarg"));
+        String nombCarg = requestBody.get("nombCarg").toString();
+
+        service.modificarCargo(codiCarg, nombCarg);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("mensaje", "Cargo modificado exitosamente.");
 
         return ResponseEntity.ok(response);
     }

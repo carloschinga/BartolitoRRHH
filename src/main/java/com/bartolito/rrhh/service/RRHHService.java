@@ -182,7 +182,7 @@ public class RRHHService {
     }
 
 
-    /*====================== SECCIÓN EMPRESA ======================*/
+    /* ====================== SECCIÓN EMPRESA ====================== */
 
     public List<Map<String, Object>> obtenerEmpresas() {
         return repository.obtenerEmpresa();
@@ -193,13 +193,26 @@ public class RRHHService {
 
         if (results.isEmpty()) {
             throw new NoSuchElementException("El Empresa con código " + codiEmpr + " no fue encontrado.");
-            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+            // return Collections.singletonMap("mensaje", "No existe turno con código " +
+            // codiTurn);
         }
         return results.get(0);
     }
 
+    public int agregarEmpresa(String nombEmpr, String toleMarc, String toleDesc) {
+        return repository.agregarEmpresa(nombEmpr, toleMarc, toleDesc);
+    }
 
-    /*====================== SECCIÓN DEPARTAMENTO ======================*/
+    public void modificarEmpresa(Integer codiEmpr, String nombEmpr, String toleMarc, String toleDesc) {
+
+        int filasAfectadas = repository.modificarEmpresa(codiEmpr, nombEmpr, toleMarc, toleDesc);
+
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiEmpr + " no existe.");
+        }
+    }
+
+    /* ====================== SECCIÓN DEPARTAMENTO ====================== */
 
     public List<Map<String, Object>> obtenerDepartamentoPorEmpresa(int codiEmpr) {
         return repository.obtenerDepartamentoXEmpresa(codiEmpr);
@@ -210,13 +223,26 @@ public class RRHHService {
 
         if (results.isEmpty()) {
             throw new NoSuchElementException("El Departamento con código " + codiDepar + " no fue encontrado.");
-            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+            // return Collections.singletonMap("mensaje", "No existe turno con código " +
+            // codiTurn);
         }
         return results.get(0);
     }
 
+    public int agregarDepartamento(String nombDepa, Integer codiEmpr) {
+        return repository.agregarDepartamento(nombDepa, codiEmpr);
+    }
 
-    /*====================== SECCIÓN SERVICIOS ======================*/
+    public void modificarDepartamento(Integer codiDepa, String nombDepa, Integer codiEmpr) {
+
+        int filasAfectadas = repository.modificarDepartamento(codiDepa, nombDepa, codiEmpr);
+
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiDepa + " no existe.");
+        }
+    }
+
+    /* ====================== SECCIÓN SERVICIOS ====================== */
 
     public List<Map<String, Object>> obtenerServiciosPorDepartamento(int codiServ) {
         return repository.obtenerServiciosXDepartamento(codiServ);
@@ -227,24 +253,27 @@ public class RRHHService {
 
         if (results.isEmpty()) {
             throw new NoSuchElementException("El Servicio con código " + codiServ + " no fue encontrado.");
-            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+            // return Collections.singletonMap("mensaje", "No existe turno con código " +
+            // codiTurn);
         }
         return results.get(0);
     }
+
     public int agregarServicio(String nombServ, int codiDepa, int codiUsua) {
         return repository.agregarServicio(nombServ, codiDepa, codiUsua);
     }
 
-    public void editarServicio(int codiServ, String nombServ, int codiDepa, int codiUsua) {
+    public void editarServicio(Integer codiServ, String nombServ, Integer codiDepa, Integer anulServ,
+                               Integer usuamodi) {
 
-        int filasAfectadas = repository.editarServicio(codiServ, nombServ, codiDepa, codiUsua);
+        int filasAfectadas = repository.editarServicio(codiServ, nombServ, codiDepa, anulServ, usuamodi);
 
         if (filasAfectadas == 0) {
             throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiServ + " no existe.");
         }
     }
 
-    /*====================== SECCIÓN CARGO ======================*/
+    /* ====================== SECCIÓN CARGO ====================== */
 
     public List<Map<String, Object>> obtenerCargos() {
         return repository.obtenerCargos();
@@ -255,11 +284,26 @@ public class RRHHService {
 
         if (results.isEmpty()) {
             throw new NoSuchElementException("El Cargo con código " + codiCarg + " no fue encontrado.");
-            //return Collections.singletonMap("mensaje", "No existe turno con código " + codiTurn);
+            // return Collections.singletonMap("mensaje", "No existe turno con código " +
+            // codiTurn);
         }
         return results.get(0);
     }
-    /*====================== SECCIÓN CAP ======================*/
+
+    public int agregarCargo(String nombCarg) {
+        return repository.agregarCargo(nombCarg);
+    }
+
+    public void modificarCargo(Integer codiCarg, String nombCarg) {
+
+        int filasAfectadas = repository.editarCargo(codiCarg, nombCarg);
+
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException("No se pudo editar el Servicio. El código " + codiCarg + " no existe.");
+        }
+    }
+
+    /* ====================== SECCIÓN CAP ====================== */
 
     public List<Map<String, Object>> obtenerCAPPorServicio( int codiServ) {
         return repository.obtenerCAPPorServicio(codiServ);
