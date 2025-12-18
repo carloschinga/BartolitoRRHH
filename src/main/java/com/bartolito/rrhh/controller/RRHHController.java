@@ -8,686 +8,824 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/api")
 public class RRHHController {
 
-    private final RRHHService service;
-    private Map<String, Object> response;
+	private final RRHHService service;
+	private Map<String, Object> response;
 
-    public RRHHController(RRHHService service) {
+	public RRHHController(RRHHService service) {
 
-        this.service = service;
-    }
+		this.service = service;
+	}
 
-    @GetMapping("/turnos/listar")
-    public ResponseEntity<Map<String, Object>> obtenerdTurnos() {
+	@GetMapping("/turnos/listar")
+	public ResponseEntity<Map<String, Object>> obtenerdTurnos() {
 
-        try {
-            List<Map<String, Object>> result = service.obtenerdTurnos();
+		try {
+			List<Map<String, Object>> result = service.obtenerdTurnos();
 
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("turnos", result);
+			Map<String, Object> data = new LinkedHashMap<>();
+			data.put("turnos", result);
 
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("resultado", "ok");
-            response.put("data", data);
+			Map<String, Object> response = new LinkedHashMap<>();
+			response.put("resultado", "ok");
+			response.put("data", data);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
-            e.printStackTrace();
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			// 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+			e.printStackTrace();
 
-            // 3. Devolvemos el mensaje de error a Postman
-            response.put("resultado", "error");
-            response.put("mensaje", "Error al intentar listar horarios");
-            // Aquí enviamos el error técnico real:
-            response.put("error_tecnico", e.getMessage());
-            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+			// 3. Devolvemos el mensaje de error a Postman
+			response.put("resultado", "error");
+			response.put("mensaje", "Error al intentar listar horarios");
+			// Aquí enviamos el error técnico real:
+			response.put("error_tecnico", e.getMessage());
+			response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
 
-            return ResponseEntity.internalServerError().body(response);
-        }
-    }
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
 
-    @GetMapping("/turnos/seleccionar/{codiTurn}")
-    public ResponseEntity<Map<String, Object>> seleccionarTurnoPorCodigo(@PathVariable Integer codiTurn) {
+	@GetMapping("/turnos/seleccionar/{codiTurn}")
+	public ResponseEntity<Map<String, Object>> seleccionarTurnoPorCodigo(@PathVariable Integer codiTurn) {
 
-        Map<String, Object> horarioData = service.seleccionarTurnoPorCodigo(codiTurn);
+		Map<String, Object> horarioData = service.seleccionarTurnoPorCodigo(codiTurn);
 
-        Map<String, Object> data = new LinkedHashMap<>();
+		Map<String, Object> data = new LinkedHashMap<>();
 
-        data.put("turno", horarioData);
+		data.put("turno", horarioData);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        return ResponseEntity.ok(response);
-    }
+		return ResponseEntity.ok(response);
+	}
 
-    @PostMapping("/turnos/agregar")
-    public ResponseEntity<Map<String, Object>> agregarTurno(@RequestBody Map<String, String> requestBody) {
+	@PostMapping("/turnos/agregar")
+	public ResponseEntity<Map<String, Object>> agregarTurno(@RequestBody Map<String, String> requestBody) {
 
-        String nombTurn = requestBody.get("nombTurn");
-        String ingrTurn = requestBody.get("ingrTurn");
-        String saldTurn = requestBody.get("saldTurn");
+		String nombTurn = requestBody.get("nombTurn");
+		String ingrTurn = requestBody.get("ingrTurn");
+		String saldTurn = requestBody.get("saldTurn");
 
-        int nuevoId = service.agregarTurno(nombTurn, ingrTurn, saldTurn);
+		int nuevoId = service.agregarTurno(nombTurn, ingrTurn, saldTurn);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Turno insertado exitosamente.");
-        response.put("nuevoId", nuevoId);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Turno insertado exitosamente.");
+		response.put("nuevoId", nuevoId);
 
-        return ResponseEntity.ok(response);
-    }
+		return ResponseEntity.ok(response);
+	}
 
-    @PutMapping("/turnos/editar/{codiTurn}")
-    public ResponseEntity<Map<String, Object>> editarTurno(@PathVariable Integer codiTurn, @RequestBody Map<String, String> requestBody) {
+	@PutMapping("/turnos/editar/{codiTurn}")
+	public ResponseEntity<Map<String, Object>> editarTurno(@PathVariable Integer codiTurn,
+			@RequestBody Map<String, String> requestBody) {
 
-        String nombTurn = requestBody.get("nombTurn");
-        String ingrTurn = requestBody.get("ingrTurn");
-        String saldTurn = requestBody.get("saldTurn");
+		String nombTurn = requestBody.get("nombTurn");
+		String ingrTurn = requestBody.get("ingrTurn");
+		String saldTurn = requestBody.get("saldTurn");
 
-        service.editarTurno(codiTurn, nombTurn, ingrTurn, saldTurn);
+		service.editarTurno(codiTurn, nombTurn, ingrTurn, saldTurn);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Turno actualizado exitosamente.");
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Turno actualizado exitosamente.");
 
-        return ResponseEntity.ok(response);
-    }
+		return ResponseEntity.ok(response);
+	}
 
+	/*
+	 * ====================== SECCIÓN DE LA GESTIÓN HORARIO ======================
+	 */
 
+	@GetMapping("/horarios/listar/{codiEmpr}")
+	public ResponseEntity<Map<String, Object>> obtenerHorario(@PathVariable Integer codiEmpr) {
 
-    /*====================== SECCIÓN DE LA GESTIÓN HORARIO ======================*/
+		List<Map<String, Object>> result = service.obtenerHorarioPorEmpresa(codiEmpr);
 
-    @GetMapping("/horarios/listar/{codiEmpr}")
-    public ResponseEntity<Map<String, Object>> obtenerHorario(@PathVariable Integer codiEmpr) {
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("horario", result);
 
-        List<Map<String, Object>> result = service.obtenerHorarioPorEmpresa(codiEmpr);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("horario", result);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+	@GetMapping("/horarios/seleccionar/{codiHora}")
+	public ResponseEntity<Map<String, Object>> seleccionarHorarioPorCodigo(@PathVariable Integer codiHora) {
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, Object> horarioData = service.seleccionarHorarioPorCodigo(codiHora);
 
-    @GetMapping("/horarios/seleccionar/{codiHora}")
-    public ResponseEntity<Map<String, Object>> seleccionarHorarioPorCodigo(@PathVariable Integer codiHora) {
+		Map<String, Object> data = new LinkedHashMap<>();
 
-        Map<String, Object> horarioData = service.seleccionarHorarioPorCodigo(codiHora);
+		data.put("horario", horarioData);
 
-        Map<String, Object> data = new LinkedHashMap<>();
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        data.put("horario", horarioData);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+	@PostMapping("/horarios/agregar")
+	public ResponseEntity<Map<String, Object>> agregarHorario(@RequestBody Map<String, Object> requestBody) {
 
-        return ResponseEntity.ok(response);
-    }
+		String nombHora = requestBody.get("nombHora").toString();
+		String cortHora = requestBody.get("cortHora").toString();
+		Integer usuacrea = Integer.parseInt(requestBody.get("usuacrea").toString());
+		Integer codiEmpr = Integer.parseInt(requestBody.get("codiEmpr").toString());
 
-    @PostMapping("/horarios/agregar")
-    public ResponseEntity<Map<String, Object>> agregarHorario(@RequestBody Map<String, Object> requestBody) {
+		int nuevoId = service.agregarHorario(nombHora, cortHora, usuacrea, codiEmpr);
 
-        String nombHora = requestBody.get("nombHora").toString();
-        String cortHora = requestBody.get("cortHora").toString();
-        Integer usuacrea = Integer.parseInt(requestBody.get("usuacrea").toString());
-        Integer codiEmpr = Integer.parseInt(requestBody.get("codiEmpr").toString());
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Horario creado exitosamente.");
+		response.put("nuevoId", nuevoId);
 
-        int nuevoId = service.agregarHorario(nombHora, cortHora,  usuacrea, codiEmpr);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Horario creado exitosamente.");
-        response.put("nuevoId", nuevoId);
+	@PutMapping("/horarios/editar/{codiHora}")
+	public ResponseEntity<Map<String, Object>> editarHorario(@PathVariable Integer codiHora,
+			@RequestBody Map<String, Object> requestBody) {
 
-        return ResponseEntity.ok(response);
-    }
+		String nombHora = requestBody.get("nombHora").toString();
+		String cortHora = requestBody.get("cortHora").toString();
+		Integer usuamodi = Integer.parseInt(requestBody.get("usuamodi").toString());
+		Integer codiEmpr = Integer.parseInt(requestBody.get("codiEmpr").toString());
 
-    @PutMapping("/horarios/editar/{codiHora}")
-    public ResponseEntity<Map<String, Object>> editarHorario(@PathVariable Integer codiHora, @RequestBody Map<String, Object> requestBody) {
+		service.editarHorario(codiHora, nombHora, cortHora, usuamodi, codiEmpr);
 
-        String nombHora = requestBody.get("nombHora").toString();
-        String cortHora = requestBody.get("cortHora").toString();
-        Integer usuamodi = Integer.parseInt(requestBody.get("usuamodi").toString());
-        Integer codiEmpr = Integer.parseInt(requestBody.get("codiEmpr").toString());
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Horario actualizado exitosamente.");
 
-        service.editarHorario(codiHora, nombHora, cortHora, usuamodi,codiEmpr);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Horario actualizado exitosamente.");
+	/*
+	 * ====================== SECCIÓN DE GESTION DETALLE HORARIO
+	 * ======================
+	 */
 
-        return ResponseEntity.ok(response);
-    }
+	@GetMapping("/horarios/detalle/listar")
+	public ResponseEntity<Map<String, Object>> obtenerHorarioDetalle() {
 
-    /*====================== SECCIÓN DE GESTION DETALLE HORARIO ======================*/
+		List<Map<String, Object>> result = service.obtenerHorarioDetalle();
 
-    @GetMapping("/horarios/detalle/listar")
-    public ResponseEntity<Map<String, Object>> obtenerHorarioDetalle() {
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("detalles", result);
 
-        List<Map<String, Object>> result = service.obtenerHorarioDetalle();
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("detalles", result);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+	@GetMapping("/horarios/detalle/seleccionar/{codiHora}")
+	public ResponseEntity<Map<String, Object>> seleccionarHorarioDetallePorCodigo(@PathVariable Integer codiHora) {
 
-        return ResponseEntity.ok(response);
-    }
+		List<Map<String, Object>> listaDetalles = service.seleccionarHorarioDetallePorCodigo(codiHora);
 
-    @GetMapping("/horarios/detalle/seleccionar/{codiHora}")
-    public ResponseEntity<Map<String, Object>> seleccionarHorarioDetallePorCodigo(@PathVariable Integer codiHora) {
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("detalles", listaDetalles);
 
-        List<Map<String, Object>> listaDetalles = service.seleccionarHorarioDetallePorCodigo(codiHora);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("detalles", listaDetalles);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+	@PostMapping("/horarios/detalle/agregar")
+	public ResponseEntity<Map<String, Object>> agregarHorarioDetalle(@RequestBody Map<String, Object> requestBody) {
 
-        return ResponseEntity.ok(response);
-    }
+		Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
+		Integer codiTurn = Integer.parseInt(requestBody.get("codiTurn").toString());
+		Integer anulTurn = Integer.parseInt(requestBody.get("anulTurn").toString()); // 1 o 0
+		Integer usuacrea = Integer.parseInt(requestBody.get("usuacrea").toString());
 
-    @PostMapping("/horarios/detalle/agregar")
-    public ResponseEntity<Map<String, Object>> agregarHorarioDetalle(@RequestBody Map<String, Object> requestBody) {
+		int nuevoId = service.agregarHorarioDetalle(codiHora, codiTurn, anulTurn, usuacrea);
 
-        Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
-        Integer codiTurn = Integer.parseInt(requestBody.get("codiTurn").toString());
-        Integer anulTurn = Integer.parseInt(requestBody.get("anulTurn").toString()); // 1 o 0
-        Integer usuacrea = Integer.parseInt(requestBody.get("usuacrea").toString());
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Detalle de horario agregado exitosamente.");
+		response.put("nuevoId", nuevoId);
 
-        int nuevoId = service.agregarHorarioDetalle(codiHora, codiTurn, anulTurn, usuacrea);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Detalle de horario agregado exitosamente.");
-        response.put("nuevoId", nuevoId);
+	@PutMapping("/horarios/detalle/editar/{codiHoraDeta}")
+	public ResponseEntity<Map<String, Object>> editarHorarioDetalle(@PathVariable Integer codiHoraDeta,
+			@RequestBody Map<String, Object> requestBody) {
 
-        return ResponseEntity.ok(response);
-    }
+		Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
+		// Integer codiDia = Integer.parseInt(requestBody.get("codiDia"));
+		Integer codiTurn = Integer.parseInt(requestBody.get("codiTurn").toString());
+		Integer anulTurn = Integer.parseInt(requestBody.get("anulTurn").toString());
+		Integer usuamodi = Integer.parseInt(requestBody.get("usuamodi").toString());
 
-    @PutMapping("/horarios/detalle/editar/{codiHoraDeta}")
-    public ResponseEntity<Map<String, Object>> editarHorarioDetalle(@PathVariable Integer codiHoraDeta, @RequestBody Map<String, Object> requestBody) {
+		service.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, anulTurn, usuamodi);
 
-        Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
-        //Integer codiDia = Integer.parseInt(requestBody.get("codiDia"));
-        Integer codiTurn = Integer.parseInt(requestBody.get("codiTurn").toString());
-        Integer anulTurn = Integer.parseInt(requestBody.get("anulTurn").toString());
-        Integer usuamodi = Integer.parseInt(requestBody.get("usuamodi").toString());
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Detalle de horario actualizado exitosamente.");
 
-        service.editarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, anulTurn, usuamodi);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Detalle de horario actualizado exitosamente.");
+	@PutMapping("/horarios/detalle/eliminar/{codiHoraDeta}")
+	public ResponseEntity<Map<String, Object>> eliminarHorarioDetalle(@PathVariable Integer codiHoraDeta,
+			@RequestBody Map<String, Integer> requestBody) {
 
-        return ResponseEntity.ok(response);
-    }
+		Integer codiHora = (requestBody.get("codiHora"));
+		Integer codiTurn = (requestBody.get("codiTurn"));
+		Integer usuamodi = (requestBody.get("usuamodi"));
 
-    @PutMapping("/horarios/detalle/eliminar/{codiHoraDeta}")
-    public ResponseEntity<Map<String, Object>> eliminarHorarioDetalle(@PathVariable Integer codiHoraDeta, @RequestBody Map<String, Integer> requestBody) {
+		service.eliminarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, usuamodi);
 
-        Integer codiHora = (requestBody.get("codiHora"));
-        Integer codiTurn = (requestBody.get("codiTurn"));
-        Integer usuamodi = (requestBody.get("usuamodi"));
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Detalle de horario eliminado (anulado) exitosamente.");
 
-        service.eliminarHorarioDetalle(codiHoraDeta, codiHora, codiTurn, usuamodi);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Detalle de horario eliminado (anulado) exitosamente.");
+	/* ====================== SECCIÓN PROGRAMACIÓN MENSUAL ====================== */
 
-        return ResponseEntity.ok(response);
-    }
+	@GetMapping("/programacion/listar")
+	public ResponseEntity<Map<String, Object>> listar(@RequestParam String inicio, @RequestParam String fin,
+			@RequestParam Integer codiServ) {
 
+		List<Map<String, Object>> data = service.listarProgramacionMensual(inicio, fin, codiServ);
 
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-    /*====================== SECCIÓN PROGRAMACIÓN MENSUAL ======================*/
+		return ResponseEntity.ok(response);
+	}
 
-    @GetMapping("/programacion/listar")
-    public ResponseEntity<Map<String, Object>> listar(@RequestParam String inicio, @RequestParam String fin, @RequestParam Integer codiServ) {
+	@GetMapping("/programacion/seleccionar")
+	public ResponseEntity<Map<String, Object>> seleccionarProgramacionPorPersona(@RequestParam Integer codiPersona,
+			@RequestParam String inicio, @RequestParam String fin) {
 
-        List<Map<String, Object>> data = service.listarProgramacionMensual(inicio, fin, codiServ);
+		List<Map<String, Object>> result = service.seleccionarProgramacionPorPersona(codiPersona, inicio, fin);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("programacion", result);
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-    @GetMapping("/programacion/seleccionar")
-    public ResponseEntity<Map<String, Object>> seleccionarProgramacionPorPersona(@RequestParam Integer codiPersona, @RequestParam String inicio, @RequestParam String fin) {
+		return ResponseEntity.ok(response);
+	}
 
-        List<Map<String, Object>> result = service.seleccionarProgramacionPorPersona(codiPersona, inicio, fin);
+	@PostMapping("/programacion/agregar")
+	public ResponseEntity<Map<String, Object>> agregarProgramacion(@RequestBody Map<String, Object> requestBody) {
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("programacion", result);
+		Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
+		Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+		String fechProg = requestBody.get("fechProg").toString();
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		int nuevoId = service.agregarProgramacion(codiHora, codiPers, fechProg);
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Programación agregada exitosamente.");
+		response.put("nuevoId", nuevoId);
 
-    @PostMapping("/programacion/agregar")
-    public ResponseEntity<Map<String, Object>> agregarProgramacion(@RequestBody Map<String, Object> requestBody) {
+		return ResponseEntity.ok(response);
+	}
 
-        Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
-        Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
-        String fechProg = requestBody.get("fechProg").toString();
+	// GET: http://localhost:8080/api/personal/listar
+	@GetMapping("/personal/listar")
+	public ResponseEntity<Map<String, Object>> listarPersonal() {
 
-        int nuevoId = service.agregarProgramacion(codiHora, codiPers, fechProg);
+		List<Map<String, Object>> result = service.listarPersonal();
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Programación agregada exitosamente.");
-        response.put("nuevoId", nuevoId);
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("personal", result);
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-    // GET: http://localhost:8080/api/personal/listar
-    @GetMapping("/personal/listar")
-    public ResponseEntity<Map<String, Object>> listarPersonal() {
+		return ResponseEntity.ok(response);
+	}
 
-        List<Map<String, Object>> result = service.listarPersonal();
+	@GetMapping("/personal/listar/{codiServ}")
+	public ResponseEntity<Map<String, Object>> listarPersonal(@PathVariable Integer codiServ) {
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("personal", result);
+		List<Map<String, Object>> result = service.listarPersonalPorServicio(codiServ);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("personal", result);
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-    @GetMapping("/personal/listar/{codiServ}")
-    public ResponseEntity<Map<String, Object>> listarPersonal(@PathVariable Integer codiServ ) {
+		return ResponseEntity.ok(response);
+	}
 
-        List<Map<String, Object>> result = service.listarPersonalPorServicio(codiServ);
+	// GET: http://localhost:8080/api/personal/seleccionar/123
+	@GetMapping("/personal/seleccionar/{id}")
+	public ResponseEntity<Map<String, Object>> seleccionarPersonal(@PathVariable Integer id) {
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("personal", result);
+		Map<String, Object> personaData = service.seleccionarPersonal(id);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("persona", personaData);
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-    // GET: http://localhost:8080/api/personal/seleccionar/123
-    @GetMapping("/personal/seleccionar/{id}")
-    public ResponseEntity<Map<String, Object>> seleccionarPersonal(@PathVariable Integer id) {
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> personaData = service.seleccionarPersonal(id);
+	@PutMapping("/programacion/modificar")
+	public ResponseEntity<Map<String, Object>> modificarProgramacion(@RequestBody Map<String, Object> requestBody) {
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("persona", personaData);
+		Integer nuevoCodiHora = Integer.parseInt(requestBody.get("codiHora").toString());
+		Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+		String fechProg = requestBody.get("fechProg").toString();
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		Integer anulPersHora = Integer.parseInt(requestBody.get("anulPersHora").toString());
 
-        return ResponseEntity.ok(response);
-    }
+		service.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, anulPersHora);
 
-    @PutMapping("/programacion/modificar")
-    public ResponseEntity<Map<String, Object>> modificarProgramacion(@RequestBody Map<String, Object> requestBody) {
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Programación modificada exitosamente.");
 
-        Integer nuevoCodiHora = Integer.parseInt(requestBody.get("codiHora").toString());
-        Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
-        String fechProg = requestBody.get("fechProg").toString();
+		return ResponseEntity.ok(response);
+	}
 
-        Integer anulPersHora = Integer.parseInt(requestBody.get("anulPersHora").toString());
+	@PutMapping("/programacion/eliminar")
+	public ResponseEntity<Map<String, Object>> eliminarProgramacion(@RequestBody Map<String, Object> requestBody) {
+		// Solo necesitamos las llaves para identificar el registro
+		Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
+		Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+		String fechProg = requestBody.get("fechProg").toString();
 
-        service.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, anulPersHora);
+		// Llamamos al servicio de eliminar (ya no enviamos el 1, el servicio lo sabe)
+		service.eliminarProgramacion(codiHora, codiPers, fechProg);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Programación modificada exitosamente.");
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Programación eliminada (anulada) exitosamente.");
 
-        return ResponseEntity.ok(response);
-    }
+		return ResponseEntity.ok(response);
+	}
 
+	/*
+	 * ====================== SECCIÓN REPORTES DE ASISTENCIA ======================
+	 */
 
-    @PutMapping("/programacion/eliminar")
-    public ResponseEntity<Map<String, Object>> eliminarProgramacion(@RequestBody Map<String, Object> requestBody) {
-        // Solo necesitamos las llaves para identificar el registro
-        Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
-        Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
-        String fechProg = requestBody.get("fechProg").toString();
+	// GET:
+	// /api/reportes/asistencia/mensual?inicio=2025-12-01&fin=2025-12-31&codiServ=1
+	@GetMapping("/reportes/asistencia/mensual")
+	public ResponseEntity<Map<String, Object>> reporteMensual(@RequestParam String inicio, @RequestParam String fin,
+			@RequestParam int codiServ) {
 
-        // Llamamos al servicio de eliminar (ya no enviamos el 1, el servicio lo sabe)
-        service.eliminarProgramacion(codiHora, codiPers, fechProg);
+		List<Map<String, Object>> data = service.reporteAsistenciaMensual(inicio, fin, codiServ);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Programación eliminada (anulada) exitosamente.");
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		// El frontend recibirá un JSON donde las llaves son las fechas ("2025-12-01":
+		// "A")
+		response.put("data", data);
 
-        return ResponseEntity.ok(response);
-    }
+		return ResponseEntity.ok(response);
+	}
 
+	// GET: /api/reportes/asistencia/diaria?fecha=2025-12-01&idEmpleado=123
+	// Si omites idEmpleado, trae a todos
+	@GetMapping("/reportes/asistencia/diaria")
+	public ResponseEntity<Map<String, Object>> reporteDiario(@RequestParam String fecha,
+			@RequestParam(required = false) Integer idEmpleado) {
 
-    /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
+		List<Map<String, Object>> data = service.reporteAsistenciaDiaria(fecha, idEmpleado);
 
-    // GET: /api/reportes/asistencia/mensual?inicio=2025-12-01&fin=2025-12-31&codiServ=1
-    @GetMapping("/reportes/asistencia/mensual")
-    public ResponseEntity<Map<String, Object>> reporteMensual(@RequestParam String inicio, @RequestParam String fin, @RequestParam int codiServ ) {
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        List<Map<String, Object>> data = service.reporteAsistenciaMensual(inicio, fin, codiServ);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        // El frontend recibirá un JSON donde las llaves son las fechas ("2025-12-01": "A")
-        response.put("data", data);
+	@GetMapping("/reportes/marcaciones/diaria")
+	public ResponseEntity<Map<String, Object>> reporteMarcacionesDiario(@RequestParam String fecha,
+			@RequestParam Integer idEmpleado) {
 
-        return ResponseEntity.ok(response);
-    }
+		List<Map<String, Object>> data = service.reporteMarcacionesDiaria(fecha, idEmpleado);
 
-    // GET: /api/reportes/asistencia/diaria?fecha=2025-12-01&idEmpleado=123
-    // Si omites idEmpleado, trae a todos
-    @GetMapping("/reportes/asistencia/diaria")
-    public ResponseEntity<Map<String, Object>> reporteDiario(@RequestParam String fecha, @RequestParam(required = false) Integer idEmpleado) {
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        List<Map<String, Object>> data = service.reporteAsistenciaDiaria(fecha, idEmpleado);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+	/* ====================== SECCIÓN EMPRESA ====================== */
+	@GetMapping("/empresas/listar")
+	public ResponseEntity<Map<String, Object>> obtenerEmpresa() {
 
-        return ResponseEntity.ok(response);
-    }
+		try {
+			List<Map<String, Object>> result = service.obtenerEmpresas();
 
-    @GetMapping("/reportes/marcaciones/diaria")
-    public ResponseEntity<Map<String, Object>> reporteMarcacionesDiario(@RequestParam String fecha, @RequestParam Integer idEmpleado) {
+			Map<String, Object> data = new LinkedHashMap<>();
+			data.put("empresas", result);
 
-        List<Map<String, Object>> data = service.reporteMarcacionesDiaria(fecha, idEmpleado);
+			Map<String, Object> response = new LinkedHashMap<>();
+			response.put("resultado", "ok");
+			response.put("data", data);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			// 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+			e.printStackTrace();
 
-        return ResponseEntity.ok(response);
-    }
+			// 3. Devolvemos el mensaje de error a Postman
+			response.put("resultado", "error");
+			response.put("mensaje", "Error al intentar listar empresas");
+			// Aquí enviamos el error técnico real:
+			response.put("error_tecnico", e.getMessage());
+			response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
 
-    /*====================== SECCIÓN EMPRESA ======================*/
-    @GetMapping("/empresas/listar")
-    public ResponseEntity<Map<String, Object>> obtenerEmpresa() {
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
 
-        try {
-            List<Map<String, Object>> result = service.obtenerEmpresas();
+	@GetMapping("/empresas/seleccionar/{codiEmpr}")
+	public ResponseEntity<Map<String, Object>> seleccionarEmpresaPorCodigo(@PathVariable Integer codiEmpr) {
 
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("empresas", result);
+		Map<String, Object> horarioData = service.seleccionarEmpresaPorCodigo(codiEmpr);
 
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("resultado", "ok");
-            response.put("data", data);
+		Map<String, Object> data = new LinkedHashMap<>();
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
-            e.printStackTrace();
+		data.put("empresa", horarioData);
 
-            // 3. Devolvemos el mensaje de error a Postman
-            response.put("resultado", "error");
-            response.put("mensaje", "Error al intentar listar empresas");
-            // Aquí enviamos el error técnico real:
-            response.put("error_tecnico", e.getMessage());
-            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-            return ResponseEntity.internalServerError().body(response);
-        }
-    }
+		return ResponseEntity.ok(response);
+	}
 
-    @GetMapping("/empresas/seleccionar/{codiEmpr}")
-    public ResponseEntity<Map<String, Object>> seleccionarEmpresaPorCodigo(@PathVariable Integer codiEmpr) {
+	@PostMapping("/empresas/agregar")
+	public ResponseEntity<Map<String, Object>> agregarEmpresas(@RequestBody Map<String, String> requestBody) {
 
-        Map<String, Object> horarioData = service.seleccionarEmpresaPorCodigo(codiEmpr);
+		String nombEmpr = requestBody.get("nombEmpr").toString();
+		String toleMarc = requestBody.get("toleMarc").toString();
+		String toleDesc = requestBody.get("toleDesc").toString();
 
-        Map<String, Object> data = new LinkedHashMap<>();
+		int nuevoId = service.agregarEmpresa(nombEmpr, toleMarc, toleDesc);
 
-        data.put("empresa", horarioData);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Empresa guardada exitosamente.");
+		response.put("nuevoId", nuevoId);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		return ResponseEntity.ok(response);
+	}
 
-        return ResponseEntity.ok(response);
-    }
+	@PostMapping("/empresas/modificar")
+	public ResponseEntity<Map<String, Object>> modificarEmpresas(@RequestBody Map<String, String> requestBody) {
 
+		int codiEmpr = Integer.parseInt(requestBody.get("codiEmpr"));
+		String nombEmpr = requestBody.get("nombEmpr").toString();
+		String toleMarc = requestBody.get("toleMarc").toString();
+		String toleDesc = requestBody.get("toleDesc").toString();
 
-    /*====================== SECCIÓN DEPARTAMENTO ======================*/
-    @GetMapping("/departamentos/listar/{codiEmpr}")
-    public ResponseEntity<Map<String, Object>> obtenerDepartamento(@PathVariable Integer codiEmpr) {
+		service.modificarEmpresa(codiEmpr, nombEmpr, toleMarc, toleDesc);
 
-        try {
-            List<Map<String, Object>> result = service.obtenerDepartamentoPorEmpresa(codiEmpr);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Empresa modificada exitosamente.");
 
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("departamentos", result);
+		return ResponseEntity.ok(response);
+	}
 
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("resultado", "ok");
-            response.put("data", data);
+	/* ====================== SECCIÓN DEPARTAMENTO ====================== */
+	@GetMapping("/departamentos/listar/{codiEmpr}")
+	public ResponseEntity<Map<String, Object>> obtenerDepartamento(@PathVariable Integer codiEmpr) {
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
-            e.printStackTrace();
+		try {
+			List<Map<String, Object>> result = service.obtenerDepartamentoPorEmpresa(codiEmpr);
 
-            // 3. Devolvemos el mensaje de error a Postman
-            response.put("resultado", "error");
-            response.put("mensaje", "Error al intentar listar empresas");
-            // Aquí enviamos el error técnico real:
-            response.put("error_tecnico", e.getMessage());
-            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+			Map<String, Object> data = new LinkedHashMap<>();
+			data.put("departamentos", result);
 
-            return ResponseEntity.internalServerError().body(response);
-        }
-    }
+			Map<String, Object> response = new LinkedHashMap<>();
+			response.put("resultado", "ok");
+			response.put("data", data);
 
-    @GetMapping("/departamentos/seleccionar/{codiDepa}")
-    public ResponseEntity<Map<String, Object>> seleccionarDepartamentosPorCodigo(@PathVariable Integer codiDepa) {
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			// 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+			e.printStackTrace();
 
-        Map<String, Object> horarioData = service.seleccionarDepartamentoPorCodigo(codiDepa);
+			// 3. Devolvemos el mensaje de error a Postman
+			response.put("resultado", "error");
+			response.put("mensaje", "Error al intentar listar empresas");
+			// Aquí enviamos el error técnico real:
+			response.put("error_tecnico", e.getMessage());
+			response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
 
-        Map<String, Object> data = new LinkedHashMap<>();
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
 
-        data.put("departamentos", horarioData);
+	@GetMapping("/departamentos/seleccionar/{codiDepa}")
+	public ResponseEntity<Map<String, Object>> seleccionarDepartamentosPorCodigo(@PathVariable Integer codiDepa) {
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		Map<String, Object> horarioData = service.seleccionarDepartamentoPorCodigo(codiDepa);
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, Object> data = new LinkedHashMap<>();
 
+		data.put("departamentos", horarioData);
 
-    /*====================== SECCIÓN SERVICIO ======================*/
-    @GetMapping("/servicios/listar/{codiDepa}")
-    public ResponseEntity<Map<String, Object>> obtenerServicios(@PathVariable Integer codiDepa) {
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        try {
-            List<Map<String, Object>> result = service.obtenerServiciosPorDepartamento(codiDepa);
+		return ResponseEntity.ok(response);
+	}
 
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("servicios", result);
+	@PostMapping("/departamentos/agregar")
+	public ResponseEntity<Map<String, Object>> agregarDepartamentos(@RequestBody Map<String, String> requestBody) {
 
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("resultado", "ok");
-            response.put("data", data);
+		String nombDepa = requestBody.get("nombDepa").toString();
+		int codiEmpr = Integer.parseInt(requestBody.get("codiEmpr"));
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
-            e.printStackTrace();
+		int nuevoId = service.agregarDepartamento(nombDepa, codiEmpr);
 
-            // 3. Devolvemos el mensaje de error a Postman
-            response.put("resultado", "error");
-            response.put("mensaje", "Error al intentar listar empresas");
-            // Aquí enviamos el error técnico real:
-            response.put("error_tecnico", e.getMessage());
-            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Departamento guardado exitosamente.");
+		response.put("nuevoId", nuevoId);
 
-            return ResponseEntity.internalServerError().body(response);
-        }
-    }
+		return ResponseEntity.ok(response);
+	}
 
-    @GetMapping("/servicios/seleccionar/{codiServ}")
-    public ResponseEntity<Map<String, Object>> seleccionarServiciosPorCodigo(@PathVariable Integer codiServ) {
+	@PostMapping("/departamentos/modificar")
+	public ResponseEntity<Map<String, Object>> modificarDepartamentos(@RequestBody Map<String, String> requestBody) {
 
-        Map<String, Object> horarioData = service.seleccionarServiciosPorCodigo(codiServ);
+		int codiDepa = Integer.parseInt(requestBody.get("codiDepa"));
+		String nombDepa = requestBody.get("nombDepa").toString();
+		int codiEmpr = Integer.parseInt(requestBody.get("codiEmpr"));
 
-        Map<String, Object> data = new LinkedHashMap<>();
+		service.modificarDepartamento(codiDepa, nombDepa, codiEmpr);
 
-        data.put("servicios", horarioData);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Departamento modificado exitosamente.");
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		return ResponseEntity.ok(response);
+	}
 
-        return ResponseEntity.ok(response);
-    }
+	/* ====================== SECCIÓN SERVICIO ====================== */
+	@GetMapping("/servicios/listar/{codiDepa}")
+	public ResponseEntity<Map<String, Object>> obtenerServicios(@PathVariable Integer codiDepa) {
 
-    /*====================== SECCIÓN CARGO ======================*/
-    @GetMapping("/cargos/listar")
-    public ResponseEntity<Map<String, Object>> obtenerCargos() {
+		try {
+			List<Map<String, Object>> result = service.obtenerServiciosPorDepartamento(codiDepa);
 
-        try {
-            List<Map<String, Object>> result = service.obtenerCargos();
+			Map<String, Object> data = new LinkedHashMap<>();
+			data.put("servicios", result);
 
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("cargos", result);
+			Map<String, Object> response = new LinkedHashMap<>();
+			response.put("resultado", "ok");
+			response.put("data", data);
 
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("resultado", "ok");
-            response.put("data", data);
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			// 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+			e.printStackTrace();
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
-            e.printStackTrace();
+			// 3. Devolvemos el mensaje de error a Postman
+			response.put("resultado", "error");
+			response.put("mensaje", "Error al intentar listar empresas");
+			// Aquí enviamos el error técnico real:
+			response.put("error_tecnico", e.getMessage());
+			response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
 
-            // 3. Devolvemos el mensaje de error a Postman
-            response.put("resultado", "error");
-            response.put("mensaje", "Error al intentar listar empresas");
-            // Aquí enviamos el error técnico real:
-            response.put("error_tecnico", e.getMessage());
-            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
 
-            return ResponseEntity.internalServerError().body(response);
-        }
-    }
+	@GetMapping("/servicios/seleccionar/{codiServ}")
+	public ResponseEntity<Map<String, Object>> seleccionarServiciosPorCodigo(@PathVariable Integer codiServ) {
 
-    @GetMapping("/cargos/seleccionar/{codiCarg}")
-    public ResponseEntity<Map<String, Object>> seleccionarCargoPorCodigo(@PathVariable Integer codiCarg) {
+		Map<String, Object> horarioData = service.seleccionarServiciosPorCodigo(codiServ);
 
-        Map<String, Object> horarioData = service.seleccionarEmpresaPorCodigo(codiCarg);
+		Map<String, Object> data = new LinkedHashMap<>();
 
-        Map<String, Object> data = new LinkedHashMap<>();
+		data.put("servicios", horarioData);
 
-        data.put("cargo", horarioData);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+		return ResponseEntity.ok(response);
+	}
 
-        return ResponseEntity.ok(response);
-    }
+	@PostMapping("/servicios/agregar")
+	public ResponseEntity<Map<String, Object>> agregarServicios(@RequestBody Map<String, String> requestBody) {
 
-    /*====================== SECCIÓN CAP ======================*/
-    @GetMapping("/caps/listar/{codiServ}")
-    public ResponseEntity<Map<String, Object>> obtenerCAPorServicio(@PathVariable Integer codiServ) {
+		String nombServ = requestBody.get("nombServ").toString();
+		int codiDepa = Integer.parseInt(requestBody.get("codiDepa"));
+		int codiUsua = Integer.parseInt(requestBody.get("codiUsua"));
 
-        try {
-            List<Map<String, Object>> result = service.obtenerCAPPorServicio(codiServ);
+		int nuevoId = service.agregarServicio(nombServ, codiDepa, codiUsua);
 
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("caps", result);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Servicio guardado exitosamente.");
+		response.put("nuevoId", nuevoId);
 
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("resultado", "ok");
-            response.put("data", data);
+		return ResponseEntity.ok(response);
+	}
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            // 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
-            e.printStackTrace();
+	@PostMapping("/servicios/modificar")
+	public ResponseEntity<Map<String, Object>> modificarServicios(@RequestBody Map<String, String> requestBody) {
 
-            // 3. Devolvemos el mensaje de error a Postman
-            response.put("resultado", "error");
-            response.put("mensaje", "Error al intentar listar empresas");
-            // Aquí enviamos el error técnico real:
-            response.put("error_tecnico", e.getMessage());
-            response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+		int codiServ = Integer.parseInt(requestBody.get("codiServ"));
+		String nombServ = requestBody.get("nombServ").toString();
+		int codiDepa = Integer.parseInt(requestBody.get("codiDepa"));
+		int anulServ = Integer.parseInt(requestBody.get("anulServ"));
+		int usuamodi = Integer.parseInt(requestBody.get("usuamodi"));
 
-            return ResponseEntity.internalServerError().body(response);
-        }
-    }
+		service.editarServicio(codiServ, nombServ, codiDepa, anulServ, usuamodi);
 
-    @GetMapping("/caps/seleccionar/{codiPers}")
-    public ResponseEntity<Map<String, Object>> seleccionarCargoPorPersona(@PathVariable Integer codiPers) {
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Servicio modificado exitosamente.");
 
-        Map<String, Object> horarioData = service.seleccionarCAPPorPersona(codiPers);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> data = new LinkedHashMap<>();
+	/* ====================== SECCIÓN CARGO ====================== */
+	@GetMapping("/cargos/listar")
+	public ResponseEntity<Map<String, Object>> obtenerCargos() {
 
-        data.put("cap", horarioData);
+		try {
+			List<Map<String, Object>> result = service.obtenerCargos();
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
+			Map<String, Object> data = new LinkedHashMap<>();
+			data.put("cargos", result);
 
-        return ResponseEntity.ok(response);
-    }
+			Map<String, Object> response = new LinkedHashMap<>();
+			response.put("resultado", "ok");
+			response.put("data", data);
 
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			// 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+			e.printStackTrace();
 
-    @PostMapping("/cap/agregar")
-    public ResponseEntity<Map<String, Object>> agregarCAP(@RequestBody Map<String, String> requestBody) {
+			// 3. Devolvemos el mensaje de error a Postman
+			response.put("resultado", "error");
+			response.put("mensaje", "Error al intentar listar empresas");
+			// Aquí enviamos el error técnico real:
+			response.put("error_tecnico", e.getMessage());
+			response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
 
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
 
-        int codiPers =Integer.parseInt(requestBody.get("codiPers"));
-        int codiServ =Integer.parseInt(requestBody.get("codiServ"));
-        int codiCarg =Integer.parseInt( requestBody.get("codiCarg"));
+	@GetMapping("/cargos/seleccionar/{codiCarg}")
+	public ResponseEntity<Map<String, Object>> seleccionarCargoPorCodigo(@PathVariable Integer codiCarg) {
 
-        int nuevoId = service.agregarCAP(codiPers, codiServ, codiCarg);
+		Map<String, Object> horarioData = service.seleccionarEmpresaPorCodigo(codiCarg);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Turno insertado exitosamente.");
-        response.put("nuevoId", nuevoId);
+		Map<String, Object> data = new LinkedHashMap<>();
 
-        return ResponseEntity.ok(response);
-    }
+		data.put("cargo", horarioData);
 
-    @DeleteMapping("/cap/eliminar/{codiPers}")
-    public ResponseEntity<Map<String, Object>> eliminarCAP(@PathVariable Integer codiPers, @RequestBody Map<String, String> requestBody) {
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
 
+		return ResponseEntity.ok(response);
+	}
 
-        service.eliminarCAP(codiPers);
+	@PostMapping("/cargos/agregar")
+	public ResponseEntity<Map<String, Object>> agregarCargo(@RequestBody Map<String, String> requestBody) {
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Turno actualizado exitosamente.");
+		String nombCarg = requestBody.get("nombCarg").toString();
 
-        return ResponseEntity.ok(response);
-    }
+		int nuevoId = service.agregarCargo(nombCarg);
+
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Cargo guardado exitosamente.");
+		response.put("nuevoId", nuevoId);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/cargos/modificar")
+	public ResponseEntity<Map<String, Object>> modificarCargo(@RequestBody Map<String, String> requestBody) {
+
+		int codiCarg = Integer.parseInt(requestBody.get("codiCarg"));
+		String nombCarg = requestBody.get("nombCarg").toString();
+
+		service.modificarCargo(codiCarg, nombCarg);
+
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Cargo modificado exitosamente.");
+
+		return ResponseEntity.ok(response);
+	}
+
+	/* ====================== SECCIÓN CAP ====================== */
+	@GetMapping("/caps/listar/{codiServ}")
+	public ResponseEntity<Map<String, Object>> obtenerCAPorServicio(@PathVariable Integer codiServ) {
+
+		try {
+			List<Map<String, Object>> result = service.obtenerCAPPorServicio(codiServ);
+
+			Map<String, Object> data = new LinkedHashMap<>();
+			data.put("caps", result);
+
+			Map<String, Object> response = new LinkedHashMap<>();
+			response.put("resultado", "ok");
+			response.put("data", data);
+
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			// 2. SI FALLA: Imprimimos el error completo en la consola (Importante para ti)
+			e.printStackTrace();
+
+			// 3. Devolvemos el mensaje de error a Postman
+			response.put("resultado", "error");
+			response.put("mensaje", "Error al intentar listar empresas");
+			// Aquí enviamos el error técnico real:
+			response.put("error_tecnico", e.getMessage());
+			response.put("causa_raiz", e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
+
+	@GetMapping("/caps/seleccionar/{codiPers}")
+	public ResponseEntity<Map<String, Object>> seleccionarCargoPorPersona(@PathVariable Integer codiPers) {
+
+		Map<String, Object> horarioData = service.seleccionarCAPPorPersona(codiPers);
+
+		Map<String, Object> data = new LinkedHashMap<>();
+
+		data.put("cap", horarioData);
+
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("data", data);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/cap/agregar")
+	public ResponseEntity<Map<String, Object>> agregarCAP(@RequestBody Map<String, String> requestBody) {
+
+		int codiPers = Integer.parseInt(requestBody.get("codiPers"));
+		int codiServ = Integer.parseInt(requestBody.get("codiServ"));
+		int codiCarg = Integer.parseInt(requestBody.get("codiCarg"));
+
+		int nuevoId = service.agregarCAP(codiPers, codiServ, codiCarg);
+
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Turno insertado exitosamente.");
+		response.put("nuevoId", nuevoId);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@DeleteMapping("/cap/eliminar/{codiPers}")
+	public ResponseEntity<Map<String, Object>> eliminarCAP(@PathVariable Integer codiPers,
+			@RequestBody Map<String, String> requestBody) {
+
+		service.eliminarCAP(codiPers);
+
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("resultado", "ok");
+		response.put("mensaje", "Turno actualizado exitosamente.");
+
+		return ResponseEntity.ok(response);
+	}
 }
