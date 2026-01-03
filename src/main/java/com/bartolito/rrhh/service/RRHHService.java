@@ -124,12 +124,10 @@ public class RRHHService {
 
 		List<Map<String, Object>> data = repository.listarProgramacionMensual(inicio, fin, codiServ);
 
-		// 🔒 NUNCA DEVOLVER NULL
 		if (data == null || data.isEmpty()) {
 			return List.of();
 		}
 
-		// 🔥 FILTRO CLAVE: eliminar fila "Mensaje"
 		if (data.size() == 1 && data.get(0).containsKey("Mensaje")) {
 			return List.of();
 		}
@@ -176,12 +174,10 @@ public class RRHHService {
 
 		List<Map<String, Object>> data = repository.listarCabecera(codiMes, soloActivos);
 
-		// 🔒 NUNCA DEVOLVER NULL
 		if (data == null || data.isEmpty()) {
 			return List.of();
 		}
 
-		// 🔥 FILTRO CLAVE: eliminar fila "Mensaje"
 		if (data.size() == 1 && data.get(0).containsKey("Mensaje")) {
 			return List.of();
 		}
@@ -193,12 +189,10 @@ public class RRHHService {
 
 		List<Map<String, Object>> data = repository.listarServiciosPorGrupo(codiGrup);
 
-		// 🔒 NUNCA DEVOLVER NULL
 		if (data == null || data.isEmpty()) {
 			return List.of();
 		}
 
-		// 🔥 FILTRO CLAVE: eliminar fila "Mensaje"
 		if (data.size() == 1 && data.get(0).containsKey("Mensaje")) {
 			return List.of();
 		}
