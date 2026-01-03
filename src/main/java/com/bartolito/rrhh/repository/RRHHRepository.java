@@ -129,8 +129,29 @@ public class RRHHRepository {
 
         return sigoldJdbc.queryForObject(sql, Integer.class, nuevoCodiHora, codiPers, fechProg, codiServ);
     }
-
-
+    
+    public List<Map<String, Object>> listarCabecera(String codiMes, Boolean soloActivos) {
+        String sql = "EXEC sp_bart_rrhh_asis_programacion_cabecera_listar ?, ?";
+        return sigoldJdbc.queryForList(sql, codiMes, soloActivos);
+    }
+    
+    public List<Map<String, Object>> listarServiciosPorGrupo(Integer codiGrup) {
+        String sql = "EXEC sp_bart_rrhh_asis_programacion_servicios_por_grupo ?";
+        return sigoldJdbc.queryForList(sql, codiGrup);
+    }
+    
+    public int agregarCabecera(String codiMes, String listaServ, Integer usuaCrea) {
+        String sql = "EXEC sp_bart_rrhh_asis_programacion_cabecera_agregar ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiMes, listaServ, usuaCrea);
+    }
+    
+    public int eliminarCabecera(Integer codiProg, Integer usuaModi) {
+        String sql = "EXEC sp_bart_rrhh_asis_programacion_cabecera_eliminar ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiProg, usuaModi);
+    }
+    
+    /// ==========================================================================
+    
     // 1. LISTAR TODOS: sp_bart_rrhh_horario_personal_listar
     public List<Map<String, Object>> listarPersonal() {
         String sql = "EXEC sp_bart_rrhh_horario_personal_listar";
@@ -146,8 +167,6 @@ public class RRHHRepository {
         String sql = "EXEC sp_bart_rrhh_horario_personal_seleccionar ?";
         return sigoldJdbc.queryForList(sql, id);
     }
-
-
 
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
 
@@ -285,9 +304,6 @@ public class RRHHRepository {
         );
     }
 
-
-
-
     /* ====================== SECCIÓN DEPARTAMENTO ====================== */
 
     public List<Map<String, Object>> obtenerDepartamentoXEmpresa(int codiEmpr) {
@@ -388,8 +404,6 @@ public class RRHHRepository {
                 codiPara, codiEmpr, valuPara
         );
     }
-
-
 
     /*====================== SECCIÓN DE CAP ======================*/
 

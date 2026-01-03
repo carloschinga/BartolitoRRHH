@@ -394,9 +394,6 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
-
-
-
     @PutMapping("/programacion/eliminar")
     public ResponseEntity<Map<String, Object>> eliminarProgramacion(
             @RequestBody Map<String, Object> requestBody) {
@@ -436,8 +433,140 @@ public class RRHHController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+    
+    @PostMapping("/programacion/listarCabecera")
+    public ResponseEntity<Map<String, Object>> listarCabecera(
+            @RequestBody Map<String, Object> requestBody) {
 
+        Map<String, Object> response = new LinkedHashMap<>();
 
+        try {
+            String codiMes = requestBody.get("codiMes").toString();
+            Boolean soloActivos   = Boolean.parseBoolean(requestBody.get("soloActivos").toString());
+
+            List<Map<String, Object>> data = service.listarCabecera(codiMes, soloActivos);
+
+            response.put("data", data); 
+            
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar eliminar la programación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+    
+    @PostMapping("/programacion/listarServiciosPorGrupo")
+    public ResponseEntity<Map<String, Object>> listarServiciosPorGrupo(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
+
+            List<Map<String, Object>> data = service.listarServiciosPorGrupo(codiGrup);
+
+            response.put("data", data); 
+            
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+    
+    @PostMapping("/programacion/agregarCabecera")
+    public ResponseEntity<Map<String, Object>> agregarCabecera(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            String codiMes = requestBody.get("codiMes").toString();
+            String listaServ   = requestBody.get("listaServ").toString();
+            Integer usuaCrea = Integer.parseInt(requestBody.get("usuaCrea").toString());
+
+            int resultado = service.agregarCabecera(codiMes, listaServ, usuaCrea);
+
+            if (resultado > 0) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Programación creada exitosamente.");
+
+            } else if (resultado == 0) {
+                response.put("resultado", "error");
+                response.put("mensaje", "No existen registros a agregar.");
+
+            } else { // resultado == -1
+                response.put("resultado", "error");
+                response.put("mensaje",
+                        "No se puede agregar la programación.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar eliminar la programación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+    
+    
+    @PostMapping("/programacion/eliminarCabecera")
+    public ResponseEntity<Map<String, Object>> eliminarCabecera(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiProg = Integer.parseInt(requestBody.get("codiProg").toString());
+            Integer usuaModi   = Integer.parseInt(requestBody.get("usuaModi").toString());
+
+            int resultado = service.eliminarCabecera(codiProg, usuaModi);
+
+            if (resultado > 0) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Programación agregada exitosamente.");
+
+            } else if (resultado == 0) {
+                response.put("resultado", "error");
+                response.put("mensaje", "No existen registros a agregar.");
+
+            } else { // resultado == -1
+                response.put("resultado", "error");
+                response.put("mensaje",
+                        "No se puede agregar la programación");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar eliminar la programación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+    
     // GET: http://localhost:8080/api/personal/listar
     @GetMapping("/personal/listar")
     public ResponseEntity<Map<String, Object>> listarPersonal() {
