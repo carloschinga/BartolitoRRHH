@@ -120,9 +120,9 @@ public class RRHHService {
 
 	/* ====================== SECCIÓN PROGRAMACIÓN MENSUAL ====================== */
 
-	public List<Map<String, Object>> listarProgramacionMensual(String inicio, String fin, int codiServ) {
+	public List<Map<String, Object>> listarProgramacionMensual(String inicio, String fin, int codiGrup) {
 
-		List<Map<String, Object>> data = repository.listarProgramacionMensual(inicio, fin, codiServ);
+		List<Map<String, Object>> data = repository.listarProgramacionMensual(inicio, fin, codiGrup);
 
 		if (data == null || data.isEmpty()) {
 			return List.of();
@@ -140,17 +140,17 @@ public class RRHHService {
 		return repository.seleccionarProgramacionPorPersona(codiPersona, fechaInicio, fechaFin);
 	}
 
-	public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer codiServ) {
-		return repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, codiServ);
+	public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer codiGrup, Integer codiServ) {
+		return repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, codiGrup, codiServ);
 
 	}
 
-	public int agregarProgramacion(Integer codiPers, String periodo, Integer codiServ) {
-		return repository.agregarProgramacion(codiPers, periodo, codiServ);
+	public int agregarProgramacion(Integer codiPers, String periodo, Integer codiGrup, Integer codiServ) {
+		return repository.agregarProgramacion(codiPers, periodo, codiGrup, codiServ);
 	}
 
-	public int eliminarProgramacion(Integer codiPers, String periodo, Integer codiServ) {
-		return repository.eliminarProgramacion(codiPers, periodo, codiServ);
+	public int eliminarProgramacion(Integer codiPers, String periodo, Integer codiGrup) {
+		return repository.eliminarProgramacion(codiPers, periodo, codiGrup);
 	}
 
 	public List<Map<String, Object>> listarPersonal() {

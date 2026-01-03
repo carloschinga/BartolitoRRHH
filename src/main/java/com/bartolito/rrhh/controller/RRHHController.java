@@ -285,18 +285,18 @@ public class RRHHController {
     public ResponseEntity<Map<String, Object>> listar(
             @RequestParam(required = false) String inicio,
             @RequestParam(required = false) String fin,
-            @RequestParam(required = false) Integer codiServ) {
+            @RequestParam(required = false) Integer codiGrup) {
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");
 
-        if (inicio == null || fin == null || codiServ == null) {
+        if (inicio == null || fin == null || codiGrup == null) {
             response.put("data", List.of());
             return ResponseEntity.ok(response);
         }
 
         List<Map<String, Object>> data =
-                service.listarProgramacionMensual(inicio, fin, codiServ);
+                service.listarProgramacionMensual(inicio, fin, codiGrup);
 
         // 🔒 CLAVE
         response.put("data", data == null ? List.of() : data);
@@ -330,12 +330,14 @@ public class RRHHController {
             Integer nuevoCodiHora = Integer.parseInt(requestBody.get("codiHora").toString());
             Integer codiPers      = Integer.parseInt(requestBody.get("codiPers").toString());
             String  fechProg      = requestBody.get("fechProg").toString(); // yyyy-MM-dd
+            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
             Integer codiServ      = Integer.parseInt(requestBody.get("codiServ").toString());
 
             int resultado = service.modificarProgramacion(
                     nuevoCodiHora,
                     codiPers,
                     fechProg,
+                    codiGrup,
                     codiServ
             );
 
@@ -380,11 +382,10 @@ public class RRHHController {
 
         Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
         String periodo = requestBody.get("periodo").toString();
+        Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
         Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
 
-
-
-        int nuevoId = service.agregarProgramacion(codiPers, periodo, codiServ);
+        int nuevoId = service.agregarProgramacion(codiPers, periodo, codiGrup, codiServ);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");
@@ -403,9 +404,9 @@ public class RRHHController {
         try {
             Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
             String periodo   = requestBody.get("periodo").toString();
-            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
 
-            int resultado = service.eliminarProgramacion(codiPers, periodo, codiServ);
+            int resultado = service.eliminarProgramacion(codiPers, periodo, codiGrup);
 
             if (resultado > 0) {
                 response.put("resultado", "ok");

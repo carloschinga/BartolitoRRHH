@@ -103,9 +103,9 @@ public class RRHHRepository {
 
     /*====================== SECCIÓN PROGRAMACIÓN MENSUAL ======================*/
 
-    public List<Map<String, Object>> listarProgramacionMensual(String fechaInicio, String fechaFin , int codiServ) {
+    public List<Map<String, Object>> listarProgramacionMensual(String fechaInicio, String fechaFin , int codiGrup) {
         String sql = "EXEC sp_bart_rrhh_horario_programacion ?, ?, ?";
-        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin, codiServ);
+        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin, codiGrup);
     }
 
     public List<Map<String, Object>> seleccionarProgramacionPorPersona(Integer codiPersona, String fechaInicio, String fechaFin) {
@@ -113,21 +113,21 @@ public class RRHHRepository {
         return sigoldJdbc.queryForList(sql, codiPersona, fechaInicio, fechaFin);
     }
 
-    public int agregarProgramacion(Integer codiPers, String periodo, int codiServ) {
-        String sql = "EXEC sp_bart_rrhh_horario_programacion_agregar ?, ?, ?";
-        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, periodo,codiServ);
+    public int agregarProgramacion(Integer codiPers, String periodo, int codiGrup, Integer codiServ) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_agregar ?, ?, ?,?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, periodo,codiGrup,codiServ);
     }
 
-    public int eliminarProgramacion(Integer codiPers, String periodo, int codiServ) {
+    public int eliminarProgramacion(Integer codiPers, String periodo, int codiGrup) {
         String sql = "EXEC sp_bart_rrhh_horario_programacion_eliminar ?, ?, ?";
-        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, periodo, codiServ);
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, periodo, codiGrup);
     }
 
-    public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer codiServ) {
+    public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, int codiGrup, Integer codiServ) {
         // Agregamos el cuarto parámetro al SQL
-        String sql = "EXEC sp_bart_rrhh_horario_programacion_modificar ?, ?, ?, ?";
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_modificar ?, ?, ?, ?, ?";
 
-        return sigoldJdbc.queryForObject(sql, Integer.class, nuevoCodiHora, codiPers, fechProg, codiServ);
+        return sigoldJdbc.queryForObject(sql, Integer.class, nuevoCodiHora, codiPers, fechProg, codiGrup, codiServ);
     }
     
     public List<Map<String, Object>> listarCabecera(String codiMes, Boolean soloActivos) {
