@@ -681,7 +681,7 @@ public class MaestrasController {
 
         try {
             List<Map<String, Object>> result =
-                    service.listar(codiEmpr, codiMes);
+                    service.listarPM(codiEmpr, codiMes);
 
             Map<String, Object> data = new LinkedHashMap<>();
             data.put("personaMes", result);
@@ -713,7 +713,7 @@ public class MaestrasController {
         Map<String, Object> response = new LinkedHashMap<>();
 
         Map<String, Object> personaMes =
-                service.seleccionar(codiPers, codiMes);
+                service.seleccionarPM(codiPers, codiMes);
 
         data.put("personaMes", personaMes);
 
@@ -736,10 +736,15 @@ public class MaestrasController {
             Integer numeHora = Integer.parseInt(body.get("numeHora").toString());
             Integer codiCarg = Integer.parseInt(body.get("codiCarg").toString());
             String  fechInic = body.get("fechInic").toString();
-            String  fechFina = body.get("fechFina").toString();
+            String fechFina = null;
+            if (body.containsKey("fechFina")
+                    && body.get("fechFina") != null
+                    && !body.get("fechFina").toString().trim().isEmpty()) {
+                fechFina = body.get("fechFina").toString();
+            }
             Integer usuaCrea = Integer.parseInt(body.get("usuaCrea").toString());
 
-            int resultado = service.agregar(
+            int resultado = service.agregarPM(
                     codiPers, codiMes, codiDepa, numeHora,
                     codiCarg, fechInic, fechFina, usuaCrea
             );
@@ -773,10 +778,15 @@ public class MaestrasController {
             Integer numeHora = Integer.parseInt(body.get("numeHora").toString());
             Integer codiCarg = Integer.parseInt(body.get("codiCarg").toString());
             String  fechInic = body.get("fechInic").toString();
-            String  fechFina = body.get("fechFina").toString();
+            String fechFina = null;
+            if (body.containsKey("fechFina")
+                    && body.get("fechFina") != null
+                    && !body.get("fechFina").toString().trim().isEmpty()) {
+                fechFina = body.get("fechFina").toString();
+            }
             Integer usuaModi = Integer.parseInt(body.get("usuaModi").toString());
 
-            int resultado = service.modificar(
+            int resultado = service.modificarPM(
                     codiPers, codiMes, codiDepa, numeHora,
                     codiCarg, fechInic, fechFina, usuaModi
             );
@@ -807,7 +817,7 @@ public class MaestrasController {
             Integer codiPers = Integer.parseInt(body.get("codiPers").toString());
             String  codiMes  = body.get("codiMes").toString();
 
-            int resultado = service.eliminar(codiPers, codiMes);
+            int resultado = service.eliminarPM(codiPers, codiMes);
 
             response.put("resultado", "ok");
             response.put("mensaje", "Asignación mensual eliminada correctamente");
@@ -824,6 +834,116 @@ public class MaestrasController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+    /* ====================== SECCIÓN FERIADO ====================== */
+
+    @GetMapping("/feriados/listar/{codiMes}")
+    public ResponseEntity<Map<String, Object>> listarFeriados(
+            @PathVariable String codiMes) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            List<Map<String, Object>> result =
+                    service.listarFeriados(codiMes);
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("feriados", result);
+
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al listar feriados del período " + codiMes);
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz",
+                    e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+
+
+    @GetMapping("/feriados/seleccionar/{codiFeri}")
+    public ResponseEntity<Map<String, Object>> seleccionarFeriado(
+            @PathVariable Integer codiFeri) {
+
+        Map<String, Object> data = new LinkedHashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        Map<String, Object> feriado =
+                service.seleccionarFeriado(codiFeri);
+
+        data.put("feriado", feriado);
+
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/feriados/agregar")
+    public ResponseEntity<Map<String, Object>> agregarFeriado(
+            @RequestBody Map<String, Object> body) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            String fechFeri = body.get("fechFeri").toString();
+
+            int resultado = service.agregarFeriado(fechFeri);
+
+            response.put("resultado", "ok");
+            response.put("mensaje", "Feriado registrado correctamente");
+            response.put("codigo", resultado);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PutMapping("/feriados/modificar")
+    public ResponseEntity<Map<String, Object>> modificarFeriado(
+            @RequestBody Map<String, Object> body) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiFeri = Integer.parseInt(body.get("codiFeri").toString());
+            String  fechFeri = body.get("fechFeri").toString();
+
+            int resultado = service.modificarFeriado(codiFeri, fechFeri);
+
+            response.put("resultado", "ok");
+            response.put("mensaje", "Feriado modificado correctamente");
+            response.put("codigo", resultado);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+
 
 
 }

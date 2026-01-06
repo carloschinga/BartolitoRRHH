@@ -232,22 +232,22 @@ public class MaestrasService {
 
     /*====================== SECCIÓN DE PERSONA_MES  ======================*/
 
-    public List<Map<String, Object>> listar(Integer codiEmpr, String codiMes) {
-        return repository.listar(codiEmpr, codiMes);
+    public List<Map<String, Object>> listarPM(Integer codiEmpr, String codiMes) {
+        return repository.listarPM(codiEmpr, codiMes);
     }
 
-    public Map<String, Object> seleccionar(Integer codiPers, String codiMes) {
-        List<Map<String, Object>> results =repository.seleccionar(codiPers, codiMes);
+    public Map<String, Object> seleccionarPM(Integer codiPers, String codiMes) {
+        List<Map<String, Object>> results =repository.seleccionarPM(codiPers, codiMes);
         if (results.isEmpty()) {
             throw new NoSuchElementException("No existe asignación mensual para la persona "+ codiPers + " y mes " + codiMes);
         }
         return results.get(0);
     }
 
-    public int agregar(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
+    public int agregarPM(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
                     Integer codiCarg,String fechInic,String fechFina,Integer usuaCrea) {
 
-        int resultado = repository.agregar(
+        int resultado = repository.agregarPM(
                 codiPers,codiMes,codiDepa,numeHora,
                 codiCarg,fechInic,fechFina,usuaCrea);
 
@@ -262,10 +262,10 @@ public class MaestrasService {
         return resultado;
     }
 
-    public int modificar(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
+    public int modificarPM(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
                         Integer codiCarg,String fechInic,String fechFina,Integer usuaModi) {
 
-        int filasAfectadas = repository.modificar(
+        int filasAfectadas = repository.modificarPM(
                 codiPers,codiMes,codiDepa,numeHora,
                 codiCarg,fechInic,fechFina,usuaModi);
 
@@ -285,10 +285,10 @@ public class MaestrasService {
         return  filasAfectadas;
     }
 
-    public int eliminar(Integer codiPers, String codiMes) {
+    public int eliminarPM(Integer codiPers, String codiMes) {
 
         int filasAfectadas =
-                repository.eliminar(codiPers, codiMes);
+                repository.eliminarPM(codiPers, codiMes);
 
         if (filasAfectadas == 0) {
             throw new NoSuchElementException(
@@ -300,6 +300,69 @@ public class MaestrasService {
         if (filasAfectadas < 0) {
             throw new IllegalStateException(
                     "No se pudo eliminar la asignación mensual"
+            );
+        }
+
+        return filasAfectadas;
+    }
+
+    /*====================== SECCIÓN DE PERSONA_MES  ======================*/
+    public List<Map<String, Object>> listarFeriados(String codiMes) {
+        return repository.listarFeriados(codiMes);
+    }
+
+
+    public Map<String, Object> seleccionarFeriado(Integer codiFeri) {
+
+        List<Map<String, Object>> results =
+                repository.seleccionarFeriado(codiFeri);
+
+        if (results.isEmpty()) {
+            throw new NoSuchElementException(
+                    "No existe feriado con código " + codiFeri
+            );
+        }
+
+        return results.get(0);
+    }
+    public int agregarFeriado(String fechFeri) {
+
+        int resultado = repository.agregarFeriado(fechFeri);
+
+        if (resultado == -1) {
+            throw new IllegalStateException(
+                    "Ya existe un feriado registrado para la fecha " + fechFeri
+            );
+        }
+
+        if (resultado <= 0) {
+            throw new IllegalStateException(
+                    "Error al registrar el feriado"
+            );
+        }
+
+        return resultado;
+    }
+    public int modificarFeriado(Integer codiFeri, String fechFeri) {
+
+        int filasAfectadas =
+                repository.modificarFeriado(codiFeri, fechFeri);
+
+        if (filasAfectadas == 0) {
+            throw new NoSuchElementException(
+                    "No existe feriado para modificar con código " + codiFeri
+            );
+        }
+
+        if (filasAfectadas == -1) {
+            throw new IllegalStateException(
+                    "Ya existe otro feriado registrado para la fecha " + fechFeri
+            );
+        }
+
+        if (filasAfectadas < 0) {
+            throw new IllegalStateException(
+                    "No se pudo modificar el feriado"
             );
         }
 
