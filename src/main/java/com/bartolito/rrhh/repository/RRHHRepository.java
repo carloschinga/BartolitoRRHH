@@ -123,13 +123,22 @@ public class RRHHRepository {
         return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, periodo, codiGrup);
     }
 
-    public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, int codiGrup, Integer codiServ) {
+    public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, int codiGrup) {
         // Agregamos el cuarto parámetro al SQL
-        String sql = "EXEC sp_bart_rrhh_horario_programacion_modificar ?, ?, ?, ?, ?";
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_modificar ?, ?, ?, ?";
 
-        return sigoldJdbc.queryForObject(sql, Integer.class, nuevoCodiHora, codiPers, fechProg, codiGrup, codiServ);
+        return sigoldJdbc.queryForObject(sql, Integer.class, nuevoCodiHora, codiPers, fechProg, codiGrup);
     }
-    
+
+    public List<Map<String, Object>> listarPersonarPorMesYDepartamento(
+            Integer codiDepa,
+            String codiMes) {
+
+        String sql = "EXEC sp_bart_rrhh_persona_mes_departamento_listar ?, ?";
+        return sigoldJdbc.queryForList(sql, codiDepa, codiMes);
+    }
+
+
     public List<Map<String, Object>> listarCabecera(String codiMes, Boolean soloActivos) {
         String sql = "EXEC sp_bart_rrhh_asis_programacion_cabecera_listar ?, ?";
         return sigoldJdbc.queryForList(sql, codiMes, soloActivos);

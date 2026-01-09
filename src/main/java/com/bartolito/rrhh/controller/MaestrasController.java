@@ -2,9 +2,11 @@ package com.bartolito.rrhh.controller;
 
 import com.bartolito.rrhh.service.MaestrasService;
 import com.bartolito.rrhh.service.RRHHService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -704,10 +706,10 @@ public class MaestrasController {
         }
     }
 
-    @GetMapping("/persona-mes/seleccionar")
+    @GetMapping("/persona-mes/seleccionar/{codiPers}/{codiMes}")
     public ResponseEntity<Map<String, Object>> seleccionar(
-            @RequestParam Integer codiPers,
-            @RequestParam String codiMes) {
+            @PathVariable Integer codiPers,
+            @PathVariable String codiMes) {
 
         Map<String, Object> data = new LinkedHashMap<>();
         Map<String, Object> response = new LinkedHashMap<>();
@@ -722,6 +724,7 @@ public class MaestrasController {
 
         return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/persona-mes/agregar")
     public ResponseEntity<Map<String, Object>> agregarPM(
@@ -834,6 +837,43 @@ public class MaestrasController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+    /* ====================== SECCIÓN PERSONA MES - DEPARTAMENTO ====================== */
+
+    @GetMapping("/persona-mes/departamento/listar/{codiDepa}/{codiMes}")
+    public ResponseEntity<Map<String, Object>> listarPMDepartamento(
+            @PathVariable Integer codiDepa,
+            @PathVariable String codiMes) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            List<Map<String, Object>> result =
+                    service.listarPMDepartamento(codiDepa, codiMes);
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("personaMes", result);
+
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje",
+                    "Error al listar personas del departamento "
+                            + codiDepa + " para el período " + codiMes);
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz",
+                    e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
     /* ====================== SECCIÓN FERIADO ====================== */
 
     @GetMapping("/feriados/listar/{codiMes}")
@@ -943,7 +983,190 @@ public class MaestrasController {
         }
     }
 
+    /* ====================== SECCIÓN VACACIONES  ====================== */
+    @GetMapping("/vacaciones/listar")
+    public ResponseEntity<Map<String, Object>> listarVacaciones(
+            @RequestParam(required = false) Integer codiEmpr,
+            @RequestParam(required = false) Integer codiPers,
+            @RequestParam(required = false) String anio
+    ) {
 
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            List<Map<String, Object>> result =
+                    service.listarVacaciones(codiEmpr,codiPers, anio);
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("vacaciones", result);
+
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al listar vacaciones");
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz",
+                    e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+
+
+    }
+    @PostMapping("/vacaciones/agregar")
+    public ResponseEntity<Map<String, Object>> agregarVacacion(
+            @RequestBody Map<String, Object> body
+    ) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            // Extraer y validar parámetros
+            Integer codiEmpr = body.get("codiEmpr") != null
+                    ? Integer.valueOf(body.get("codiEmpr").toString())
+                    : null;
+            Integer codiPers = body.get("codiPers") != null
+                    ? Integer.valueOf(body.get("codiPers").toString())
+                    : null;
+
+            LocalDate fechVacaIni = body.get("fechVacaIni") != null
+                    ? LocalDate.parse(body.get("fechVacaIni").toString())
+                    : null;
+
+            LocalDate fechVacaFin = body.get("fechVacaFin") != null
+                    ? LocalDate.parse(body.get("fechVacaFin").toString())
+                    : null;
+
+            int resultado = service.agregarVacaciones(
+                    codiEmpr,
+                    codiPers,
+                    fechVacaIni,
+                    fechVacaFin
+            );
+
+            response.put("resultado", resultado == 1 ? "ok" : "warning");
+            response.put("codigo", resultado);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+
+            response.put("resultado", "error");
+            response.put("mensaje", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al agregar vacaciones");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @DeleteMapping("/vacaciones/eliminar")
+    public ResponseEntity<Map<String, Object>> eliminarVacacion(
+            @RequestBody Map<String, Object> body
+    ) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiEmpr = body.get("codiEmpr") != null
+                    ? Integer.valueOf(body.get("codiEmpr").toString())
+                    : null;
+
+            Integer codiPers = body.get("codiPers") != null
+                    ? Integer.valueOf(body.get("codiPers").toString())
+                    : null;
+
+            LocalDate fechVacaIni = body.get("fechVacaIni") != null
+                    ? LocalDate.parse(body.get("fechVacaIni").toString())
+                    : null;
+
+            LocalDate fechVacaFin = body.get("fechVacaFin") != null
+                    ? LocalDate.parse(body.get("fechVacaFin").toString())
+                    : null;
+
+            if (codiPers == null || fechVacaIni == null || fechVacaFin == null) {
+                throw new IllegalArgumentException("Parámetros obligatorios incompletos");
+            }
+
+            int resultado = service.eliminarVacacion(
+                    codiEmpr,
+                    codiPers,
+                    fechVacaIni,
+                    fechVacaFin
+            );
+
+            response.put("resultado", resultado == 1 ? "ok" : "warning");
+            response.put("mensaje",
+                    resultado == 1
+                            ? "Vacaciones eliminadas correctamente"
+                            : resultado == 0
+                            ? "No existen vacaciones en el rango indicado"
+                            : "Rango de fechas inválido");
+            response.put("codigo", resultado);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+
+            response.put("resultado", "error");
+            response.put("mensaje", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al eliminar vacaciones");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/persona/anio/listar")
+    public ResponseEntity<Map<String, Object>> listarPersonaAnio(
+            @RequestParam(required = false) Integer codiEmpr,
+            @RequestParam(required = false) String anio
+    ) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            List<Map<String, Object>> result =
+                    service.listarPersonaAnio(codiEmpr, anio);
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("personas", result);
+
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al listar personas por año");
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz",
+                    e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 
 
 }

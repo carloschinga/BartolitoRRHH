@@ -140,8 +140,8 @@ public class RRHHService {
 		return repository.seleccionarProgramacionPorPersona(codiPersona, fechaInicio, fechaFin);
 	}
 
-	public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer codiGrup, Integer codiServ) {
-		return repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, codiGrup, codiServ);
+	public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer codiGrup) {
+		return repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, codiGrup);
 
 	}
 
@@ -170,6 +170,20 @@ public class RRHHService {
 		return results.get(0);
 	}
 
+    public List<Map<String, Object>> listarPersonarPorMesYDepartamento(
+            Integer codiDepa,
+            String codiMes) {
+
+        List<Map<String, Object>> result =
+                repository.listarPersonarPorMesYDepartamento(codiDepa, codiMes);
+
+        if (result == null || result.isEmpty()) {
+            // Mantengo tu estilo: no lanzar excepción, solo lista vacía
+            return result;
+        }
+
+        return result;
+    }
 	public List<Map<String, Object>> listarCabecera(String codiMes, Boolean soloActivos) {
 
 		List<Map<String, Object>> data = repository.listarCabecera(codiMes, soloActivos);

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -237,6 +239,16 @@ public class MaestrasRepository {
         return sigoldJdbc.queryForObject(sql,Integer.class,codiPers,codiMes);
     }
 
+    public List<Map<String, Object>> listarPMDepartamento(
+            Integer codiDepa,
+            String codiMes) {
+
+        String sql = "EXEC sp_bart_rrhh_persona_mes_departamento_listar ?, ?";
+        return sigoldJdbc.queryForList(sql, codiDepa, codiMes);
+    }
+
+
+
     /*====================== SECCIÓN FERIADOS  ======================*/
     public List<Map<String, Object>> listarFeriados(String codiMes) {
         String sql = "EXEC sp_bart_rrhh_asis_feriado_listar ?";
@@ -263,6 +275,75 @@ public class MaestrasRepository {
                 fechFeri
         );
     }
+
+    /*====================== SECCIÓN VACACIONES  ======================*/
+
+    public List<Map<String, Object>> listarVacaciones(
+            Integer codiEmpr,
+            Integer codiPers,
+            String anio
+    ) {
+        String sql = "EXEC sp_bart_rrhh_persona_vacaciones_listar ?,?, ?";
+        return sigoldJdbc.queryForList(
+                sql,
+                codiEmpr,
+                codiPers,
+                anio
+        );
+    }
+
+    public int agregarVacacion(
+            Integer codiEmpr,
+            Integer codiPers,
+            LocalDate fechVacaIni,
+            LocalDate fechVacaFin
+    ) {
+        String sql = "EXEC sp_bart_rrhh_persona_vacaciones_agregar ?, ?, ?, ?";
+
+        return sigoldJdbc.queryForObject(
+                sql,
+                Integer.class,
+                codiEmpr,
+                codiPers,
+                Date.valueOf(fechVacaIni),
+                Date.valueOf(fechVacaFin)
+        );
+    }
+
+
+    public int eliminarVacacion(
+            Integer codiEmpr,
+            Integer codiPers,
+            LocalDate fechVacaIni,
+            LocalDate fechVacaFin
+    ) {
+
+        String sql = "EXEC sp_bart_rrhh_persona_vacaciones_eliminar ?, ?, ?, ?";
+
+        return sigoldJdbc.queryForObject(
+                sql,
+                Integer.class,
+                codiEmpr,
+                codiPers,
+                Date.valueOf(fechVacaIni),
+                Date.valueOf(fechVacaFin)
+        );
+    }
+
+    public List<Map<String, Object>> listarPersonaAnio(
+            Integer codiEmpr,
+            String codiAnio
+    ) {
+
+        String sql = "EXEC sp_bart_rrhh_persona_anio_listar ?, ?";
+
+        return sigoldJdbc.queryForList(
+                sql,
+                codiEmpr,
+                codiAnio
+        );
+    }
+
 
 
 }
