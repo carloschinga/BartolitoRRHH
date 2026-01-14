@@ -330,14 +330,12 @@ public class RRHHController {
             Integer codiPers      = Integer.parseInt(requestBody.get("codiPers").toString());
             String  fechProg      = requestBody.get("fechProg").toString(); // yyyy-MM-dd
             Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
-            Integer codiServ      = Integer.parseInt(requestBody.get("codiServ").toString());
 
             int resultado = service.modificarProgramacion(
                     nuevoCodiHora,
                     codiPers,
                     fechProg,
-                    codiGrup,
-                    codiServ
+                    codiGrup
             );
 
             if (resultado > 0) {
@@ -433,7 +431,8 @@ public class RRHHController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
-    
+
+
     @PostMapping("/programacion/listarCabecera")
     public ResponseEntity<Map<String, Object>> listarCabecera(
             @RequestBody Map<String, Object> requestBody) {
@@ -619,11 +618,11 @@ public class RRHHController {
 
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
 
-    // GET: /api/reportes/asistencia/mensual?inicio=2025-12-01&fin=2025-12-31&codiServ=1
+    // GET: /api/reportes/asistencia/mensual?inicio=2025-12-01&fin=2025-12-31&codiGrup=1
     @GetMapping("/reportes/asistencia/mensual")
-    public ResponseEntity<Map<String, Object>> reporteMensual(@RequestParam String inicio, @RequestParam String fin, @RequestParam int codiServ ) {
+    public ResponseEntity<Map<String, Object>> reporteMensual(@RequestParam String inicio, @RequestParam String fin, @RequestParam int codiGrup ) {
 
-        List<Map<String, Object>> data = service.reporteAsistenciaMensual(inicio, fin, codiServ);
+        List<Map<String, Object>> data = service.reporteAsistenciaMensual(inicio, fin, codiGrup);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");
@@ -661,13 +660,12 @@ public class RRHHController {
 
     @GetMapping("/reportes/resumen/diario/servicio")
     public ResponseEntity<Map<String, Object>> reporteResumenDiarioServicio(
-            @RequestParam String fechaInicio,
-            @RequestParam String fechaFin,
-            @RequestParam Integer codiServ
+            @RequestParam String fecha,
+            @RequestParam Integer codiGrup
     ) {
 
         List<Map<String, Object>> data =
-                service.reporteResumenDiarioServicio(fechaInicio, fechaFin, codiServ);
+                service.reporteResumenDiarioServicio(fecha, codiGrup);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");

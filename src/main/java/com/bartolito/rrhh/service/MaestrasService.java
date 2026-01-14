@@ -4,6 +4,7 @@ import com.bartolito.rrhh.repository.MaestrasRepository;
 import com.bartolito.rrhh.repository.RRHHRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -306,7 +307,17 @@ public class MaestrasService {
         return filasAfectadas;
     }
 
-    /*====================== SECCIÓN DE PERSONA_MES  ======================*/
+    public List<Map<String, Object>> listarPMDepartamento(
+            Integer codiDepa,
+            String codiMes) {
+
+        List<Map<String, Object>> result =
+                repository.listarPMDepartamento(codiDepa, codiMes);
+
+        // Manteniendo tu estilo: para listados no lanzamos excepción
+        return result;
+    }
+    /*====================== SECCIÓN DE FERIADOS  ======================*/
     public List<Map<String, Object>> listarFeriados(String codiMes) {
         return repository.listarFeriados(codiMes);
     }
@@ -368,5 +379,72 @@ public class MaestrasService {
 
         return filasAfectadas;
     }
+    /*
+     * ====================== SECCIÓN VACACIONES  ======================
+     */
+    public List<Map<String, Object>> listarVacaciones(
+            Integer codiEmpr,
+            Integer codiPers,
+            String anio
+    ) {
+        return repository.listarVacaciones(
+                codiEmpr,
+                codiPers,
+                anio
+        );
+    }
+
+    public int agregarVacaciones(
+            Integer codiEmpr,
+            Integer codiPers,
+            LocalDate fechVacaIni,
+            LocalDate fechVacaFin
+    ) {
+
+        if (codiPers == null || fechVacaIni == null || fechVacaFin == null) {
+            throw new IllegalArgumentException("Parámetros obligatorios incompletos");
+        }
+
+        return repository.agregarVacacion(
+                codiEmpr,
+                codiPers,
+                fechVacaIni,
+                fechVacaFin
+        );
+    }
+
+    public int eliminarVacacion(
+            Integer codiEmpr,
+            Integer codiPers,
+            LocalDate fechVacaIni,
+            LocalDate fechVacaFin
+    ) {
+
+        if (codiPers == null || fechVacaIni == null || fechVacaFin == null) {
+            throw new IllegalArgumentException("Parámetros obligatorios incompletos");
+        }
+
+        if (fechVacaIni.isAfter(fechVacaFin)) {
+            throw new IllegalArgumentException("La fecha inicio no puede ser mayor que la fecha fin");
+        }
+
+        return repository.eliminarVacacion(
+                codiEmpr,
+                codiPers,
+                fechVacaIni,
+                fechVacaFin
+        );
+    }
+
+    public List<Map<String, Object>> listarPersonaAnio(
+            Integer codiEmpr,
+            String anio
+    ) {
+        return repository.listarPersonaAnio(
+                codiEmpr,
+                anio
+        );
+    }
+
 
 }
