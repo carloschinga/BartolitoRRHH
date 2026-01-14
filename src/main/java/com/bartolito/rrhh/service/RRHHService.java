@@ -241,9 +241,9 @@ public class RRHHService {
 		return repository.reporteMarcacionesDiaria(fecha, idEmpleado);
 	}
 
-	public List<Map<String, Object>> reporteResumenDiarioServicio(String fechaInicio, String fechaFin,
+	public List<Map<String, Object>> reporteResumenDiarioServicio(String fecha,
 			Integer codiServ) {
-		return repository.reporteResumenDiarioServicio(fechaInicio, fechaFin, codiServ);
+		return repository.reporteResumenDiarioServicio(fecha,  codiServ);
 	}
 
 

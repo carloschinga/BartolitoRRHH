@@ -198,7 +198,7 @@ public class RRHHRepository {
 
     // 3. REPORTE MARCACIONES (Puede ser un empleado o todos)
     public List<Map<String, Object>> reporteMarcacionesDiaria(String fecha, Integer idEmpleado) {
-        // EXEC sp_bart_rrhh_asis_asistencia_diaria '2025-12-01', 123
+            // EXEC sp_bart_rrhh_asis_asistencia_diaria '2025-12-01', 123
         String sql = "EXEC [sp_bart_rrhh_asis_marcaciones] ?, ?";
 
         return sigoldJdbc.queryForList(sql,  idEmpleado,fecha);
@@ -207,14 +207,13 @@ public class RRHHRepository {
     //4.
 
     public List<Map<String, Object>> reporteResumenDiarioServicio(
-            String fechaInicio,
-            String fechaFin,
+            String fecha,
             Integer codiServ
     ) {
         // EXEC sp_bart_rrhh_asis_resumen_diario_servicio '2025-12-01','2025-12-31',10
-        String sql = "EXEC sp_bart_rrhh_asis_resumen_diario_servicio ?, ?, ?";
+        String sql = "EXEC sp_bart_rrhh_horario_tareo ?, ?,?";
 
-        return sigoldJdbc.queryForList(sql, fechaInicio, fechaFin, codiServ);
+        return sigoldJdbc.queryForList(sql, fecha,fecha,  codiServ);
     }
 
 

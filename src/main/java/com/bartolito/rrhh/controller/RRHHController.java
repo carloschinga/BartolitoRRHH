@@ -660,13 +660,12 @@ public class RRHHController {
 
     @GetMapping("/reportes/resumen/diario/servicio")
     public ResponseEntity<Map<String, Object>> reporteResumenDiarioServicio(
-            @RequestParam String fechaInicio,
-            @RequestParam String fechaFin,
-            @RequestParam Integer codiServ
+            @RequestParam String fecha,
+            @RequestParam Integer codiGrup
     ) {
 
         List<Map<String, Object>> data =
-                service.reporteResumenDiarioServicio(fechaInicio, fechaFin, codiServ);
+                service.reporteResumenDiarioServicio(fecha, codiGrup);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("resultado", "ok");
