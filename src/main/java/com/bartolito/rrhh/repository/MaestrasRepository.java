@@ -278,12 +278,13 @@ public class MaestrasRepository {
 
     /*====================== SECCIÓN VACACIONES  ======================*/
 
-    public List<Map<String, Object>> listarVacaciones(
+    public List<Map<String, Object>> listarLicencia (
             Integer codiEmpr,
             Integer codiPers,
             String anio
     ) {
-        String sql = "EXEC sp_bart_rrhh_persona_vacaciones_listar ?,?, ?";
+        String sql = "EXEC sp_bart_rrhh_persona_licencia_listar ?, ?, ?";
+
         return sigoldJdbc.queryForList(
                 sql,
                 codiEmpr,
@@ -292,44 +293,56 @@ public class MaestrasRepository {
         );
     }
 
-    public int agregarVacacion(
+    public int agregarLicencia (
             Integer codiEmpr,
             Integer codiPers,
-            LocalDate fechVacaIni,
-            LocalDate fechVacaFin
+            LocalDate fechLiceIni,
+            LocalDate fechLiceFin,
+            String cortLice
     ) {
-        String sql = "EXEC sp_bart_rrhh_persona_vacaciones_agregar ?, ?, ?, ?";
+        String sql = "EXEC sp_bart_rrhh_persona_licencia_agregar ?, ?, ?, ?, ?";
 
         return sigoldJdbc.queryForObject(
                 sql,
                 Integer.class,
                 codiEmpr,
                 codiPers,
-                Date.valueOf(fechVacaIni),
-                Date.valueOf(fechVacaFin)
+                Date.valueOf(fechLiceIni),
+                Date.valueOf(fechLiceFin),
+                cortLice // ← tipo de licencia
         );
     }
 
 
-    public int eliminarVacacion(
+
+    public int eliminarLicencia (
             Integer codiEmpr,
             Integer codiPers,
-            LocalDate fechVacaIni,
-            LocalDate fechVacaFin
+            LocalDate fechLiceIni,
+            LocalDate fechLiceFin
     ) {
-
-        String sql = "EXEC sp_bart_rrhh_persona_vacaciones_eliminar ?, ?, ?, ?";
+        String sql = "EXEC sp_bart_rrhh_persona_licencia_eliminar ?, ?, ?, ?";
 
         return sigoldJdbc.queryForObject(
                 sql,
                 Integer.class,
                 codiEmpr,
                 codiPers,
-                Date.valueOf(fechVacaIni),
-                Date.valueOf(fechVacaFin)
+                Date.valueOf(fechLiceIni),
+                Date.valueOf(fechLiceFin)
         );
     }
 
+    /*====================== SECCIÓN TIPO LICENCIA   ======================*/
+    public List<Map<String, Object>> listarTipoLicencia() {
+
+        String sql = "EXEC sp_bart_rrhh_tipo_licencia_listar";
+
+        return sigoldJdbc.queryForList(sql);
+    }
+
+
+    /*====================== SECCIÓN PERSONA AÑO  ======================*/
     public List<Map<String, Object>> listarPersonaAnio(
             Integer codiEmpr,
             String codiAnio
