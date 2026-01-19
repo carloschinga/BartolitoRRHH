@@ -380,62 +380,74 @@ public class MaestrasService {
         return filasAfectadas;
     }
     /*
-     * ====================== SECCIÓN VACACIONES  ======================
+     * ====================== SECCIÓN LICENCIAS  ======================
      */
-    public List<Map<String, Object>> listarVacaciones(
+    public List<Map<String, Object>> listarLicencia(
             Integer codiEmpr,
             Integer codiPers,
             String anio
     ) {
-        return repository.listarVacaciones(
+        return repository.listarLicencia(
                 codiEmpr,
                 codiPers,
                 anio
         );
     }
 
-    public int agregarVacaciones(
+    public int agregarLicencia(
             Integer codiEmpr,
             Integer codiPers,
-            LocalDate fechVacaIni,
-            LocalDate fechVacaFin
+            LocalDate fechLiceIni,
+            LocalDate fechLiceFin,
+            String cortLice
     ) {
 
-        if (codiPers == null || fechVacaIni == null || fechVacaFin == null) {
+        if (codiPers == null || fechLiceIni == null || fechLiceFin == null || cortLice == null) {
             throw new IllegalArgumentException("Parámetros obligatorios incompletos");
         }
 
-        return repository.agregarVacacion(
+        return repository.agregarLicencia(
                 codiEmpr,
                 codiPers,
-                fechVacaIni,
-                fechVacaFin
+                fechLiceIni,
+                fechLiceFin,
+                cortLice
         );
     }
 
-    public int eliminarVacacion(
+    public int eliminarLicencia(
             Integer codiEmpr,
             Integer codiPers,
-            LocalDate fechVacaIni,
-            LocalDate fechVacaFin
+            LocalDate fechLiceIni,
+            LocalDate fechLiceFin
     ) {
 
-        if (codiPers == null || fechVacaIni == null || fechVacaFin == null) {
+        if (codiPers == null || fechLiceIni == null || fechLiceFin == null) {
             throw new IllegalArgumentException("Parámetros obligatorios incompletos");
         }
 
-        if (fechVacaIni.isAfter(fechVacaFin)) {
+        if (fechLiceIni.isAfter(fechLiceFin)) {
             throw new IllegalArgumentException("La fecha inicio no puede ser mayor que la fecha fin");
         }
 
-        return repository.eliminarVacacion(
+        return repository.eliminarLicencia(
                 codiEmpr,
                 codiPers,
-                fechVacaIni,
-                fechVacaFin
+                fechLiceIni,
+                fechLiceFin
         );
     }
 
+    /*
+     * ====================== SECCIÓN TIPO DE LICENCIA  ======================
+     */
+    public List<Map<String, Object>> listarTipoLicencia() {
+        return repository.listarTipoLicencia();
+    }
+
+    /*
+     * ====================== SECCIÓN PERSONA AÑO  ======================
+     */
     public List<Map<String, Object>> listarPersonaAnio(
             Integer codiEmpr,
             String anio
