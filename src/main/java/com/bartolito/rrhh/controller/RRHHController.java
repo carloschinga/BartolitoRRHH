@@ -446,20 +446,6 @@ public class RRHHController {
 
             int resultado = service.eliminarProgramacionSemana(codiPers, codiGrup, codiHora, fechProg);
 
-            if (resultado > 0) {
-                response.put("resultado", "ok");
-                response.put("mensaje", "Programación eliminada exitosamente.");
-
-            } else if (resultado == 0) {
-                response.put("resultado", "error");
-                response.put("mensaje", "No existen registros a eliminar.");
-
-            } else { // resultado == -1
-                response.put("resultado", "error");
-                response.put("mensaje",
-                        "No se puede eliminar la programación porque existen días ya procesados.");
-            }
-
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

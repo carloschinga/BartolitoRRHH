@@ -140,7 +140,7 @@ public class RRHHRepository {
     
     public int eliminarProgramacionSemana(Integer codiPers, Integer codiGrup, Integer codiHora, String fechProg) {
         String sql = "EXEC sp_bart_rrhh_asis_programacion_eliminar_semana ?, ?, ?,?";
-        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, codiGrup, codiHora, fechProg);
+        return sigoldJdbc.update(sql, codiPers, codiGrup, codiHora, fechProg);
     }
 
     public List<Map<String, Object>> listarCabecera(String codiMes, Boolean soloActivos) {
