@@ -152,6 +152,10 @@ public class RRHHService {
 	public int eliminarProgramacion(Integer codiPers, String periodo, Integer codiGrup) {
 		return repository.eliminarProgramacion(codiPers, periodo, codiGrup);
 	}
+	
+	public int eliminarProgramacionSemana(Integer codiPers, Integer codiGrup, Integer codiHora, String fechProg) {
+		return repository.eliminarProgramacionSemana(codiPers, codiGrup, codiHora, fechProg);
+	}
 
 	public List<Map<String, Object>> listarPersonal() {
 		return repository.listarPersonal();
