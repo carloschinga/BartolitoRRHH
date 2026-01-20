@@ -431,6 +431,47 @@ public class RRHHController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+    
+    @DeleteMapping("/programacion/eliminarSemana")
+    public ResponseEntity<Map<String, Object>> eliminarProgramacionSemana(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
+            Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
+            String fechProg = requestBody.get("fechProg").toString();
+
+            int resultado = service.eliminarProgramacionSemana(codiPers, codiGrup, codiHora, fechProg);
+
+            if (resultado > 0) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Programación eliminada exitosamente.");
+
+            } else if (resultado == 0) {
+                response.put("resultado", "error");
+                response.put("mensaje", "No existen registros a eliminar.");
+
+            } else { // resultado == -1
+                response.put("resultado", "error");
+                response.put("mensaje",
+                        "No se puede eliminar la programación porque existen días ya procesados.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar eliminar la programación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 
 
     @PostMapping("/programacion/listarCabecera")

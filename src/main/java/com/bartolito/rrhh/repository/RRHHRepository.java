@@ -137,7 +137,11 @@ public class RRHHRepository {
         String sql = "EXEC sp_bart_rrhh_persona_mes_departamento_listar ?, ?";
         return sigoldJdbc.queryForList(sql, codiDepa, codiMes);
     }
-
+    
+    public int eliminarProgramacionSemana(Integer codiPers, Integer codiGrup, Integer codiHora, String fechProg) {
+        String sql = "EXEC sp_bart_rrhh_asis_programacion_eliminar_semana ?, ?, ?,?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiPers, codiGrup, codiHora, fechProg);
+    }
 
     public List<Map<String, Object>> listarCabecera(String codiMes, Boolean soloActivos) {
         String sql = "EXEC sp_bart_rrhh_asis_programacion_cabecera_listar ?, ?";
