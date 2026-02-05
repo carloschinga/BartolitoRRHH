@@ -305,9 +305,9 @@ public class RRHHController {
 
 
     @GetMapping("/programacion/seleccionar")
-    public ResponseEntity<Map<String, Object>> seleccionarProgramacionPorPersona(@RequestParam Integer codiPersona, @RequestParam String inicio, @RequestParam String fin) {
+    public ResponseEntity<Map<String, Object>> seleccionarProgramacionPorPersona(@RequestParam Integer codiPersona, @RequestParam String inicio, @RequestParam String fin,@RequestParam Integer codiServ) {
 
-        List<Map<String, Object>> result = service.seleccionarProgramacionPorPersona(codiPersona, inicio, fin);
+        List<Map<String, Object>> result = service.seleccionarProgramacionPorPersona(codiPersona, inicio, fin, codiServ);
 
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("programacion", result);
@@ -330,12 +330,14 @@ public class RRHHController {
             Integer codiPers      = Integer.parseInt(requestBody.get("codiPers").toString());
             String  fechProg      = requestBody.get("fechProg").toString(); // yyyy-MM-dd
             Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
 
             int resultado = service.modificarProgramacion(
                     nuevoCodiHora,
                     codiPers,
                     fechProg,
-                    codiGrup
+                    codiGrup,
+                    codiServ
             );
 
             if (resultado > 0) {
@@ -375,22 +377,34 @@ public class RRHHController {
 
 
     @PostMapping("/programacion/agregar")
-    public ResponseEntity<Map<String, Object>> agregarProgramacion(@RequestBody Map<String, Object> requestBody) {
-
-        Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
-        String periodo = requestBody.get("periodo").toString();
-        Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
-        Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
-
-        int nuevoId = service.agregarProgramacion(codiPers, periodo, codiGrup, codiServ);
+    public ResponseEntity<Map<String, Object>> agregarProgramacion(
+            @RequestBody Map<String, Object> requestBody) {
 
         Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("mensaje", "Programación agregada exitosamente.");
-        response.put("nuevoId", nuevoId);
 
-        return ResponseEntity.ok(response);
+        try {
+            Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+            String periodo = requestBody.get("periodo").toString();
+            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+
+            int filas = service.agregarProgramacion(codiPers, periodo, codiGrup, codiServ);
+
+            response.put("resultado", "ok");
+            response.put("filas_insertadas", filas);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // 👈 REVISA ESTO EN LA CONSOLA
+
+            response.put("resultado", "error");
+            response.put("mensaje", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
     }
+
 
     @PutMapping("/programacion/eliminar")
     public ResponseEntity<Map<String, Object>> eliminarProgramacion(
@@ -402,8 +416,9 @@ public class RRHHController {
             Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
             String periodo   = requestBody.get("periodo").toString();
             Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
 
-            int resultado = service.eliminarProgramacion(codiPers, periodo, codiGrup);
+            int resultado = service.eliminarProgramacion(codiPers, periodo, codiGrup, codiServ);
 
             if (resultado > 0) {
                 response.put("resultado", "ok");
@@ -431,8 +446,8 @@ public class RRHHController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
-    
-    @DeleteMapping("/programacion/eliminarSemana")
+
+    @DeleteMapping("/programacion/eliminardia")
     public ResponseEntity<Map<String, Object>> eliminarProgramacionSemana(
             @RequestBody Map<String, Object> requestBody) {
 
@@ -440,16 +455,16 @@ public class RRHHController {
 
         try {
             Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
-            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
-            Integer codiHora = Integer.parseInt(requestBody.get("codiHora").toString());
             String fechProg = requestBody.get("fechProg").toString();
 
-            int resultado = service.eliminarProgramacionSemana(codiPers, codiGrup, codiHora, fechProg);
+            int filas = service.eliminarProgramaciondia(codiPers, fechProg);
+
+            response.put("resultado", filas > 0 ? "ok" : "sin_cambios");
+            response.put("filas_afectadas", filas);
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
 
             response.put("resultado", "error");
             response.put("mensaje", "Error al intentar eliminar la programación");
@@ -458,6 +473,7 @@ public class RRHHController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
 
 
     @PostMapping("/programacion/listarCabecera")
@@ -572,12 +588,12 @@ public class RRHHController {
 
             } else if (resultado == 0) {
                 response.put("resultado", "error");
-                response.put("mensaje", "No existen registros a agregar.");
+                response.put("mensaje", "La programación no existe o ya fue anulada.");
 
             } else { // resultado == -1
                 response.put("resultado", "error");
                 response.put("mensaje",
-                        "No se puede agregar la programación");
+                        "No se puede eliminar la programación porque ya está asignada a personal.");
             }
 
             return ResponseEntity.ok(response);
@@ -609,20 +625,7 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/personal/listar/{codiServ}")
-    public ResponseEntity<Map<String, Object>> listarPersonal(@PathVariable Integer codiServ ) {
 
-        List<Map<String, Object>> result = service.listarPersonalPorServicio(codiServ);
-
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("personal", result);
-
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("resultado", "ok");
-        response.put("data", data);
-
-        return ResponseEntity.ok(response);
-    }
 
     // GET: http://localhost:8080/api/personal/seleccionar/123
     @GetMapping("/personal/seleccionar/{id}")
@@ -644,6 +647,68 @@ public class RRHHController {
 
 
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
+    // GET: /api/marcaciones/diarias?codiPers=60&fecha_ini=2026-01-02&fecha_fin=2026-01-02&codiGroup=2
+    @GetMapping("/marcaciones/diarias")
+    public ResponseEntity<Map<String, Object>> reporteDiario(@RequestParam int codiGrup,@RequestParam String fecha_ini,@RequestParam String fecha_fin,@RequestParam int reprocesar) {
+        List<Map<String, Object>> data=service.marcacionesDiarias(codiGrup, fecha_ini, fecha_fin, reprocesar );
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+    // GET: /api/marcaciones/diarias?codiPers=60&fecha_ini=2026-01-02&fecha_fin=2026-01-02&codiGroup=2
+    @GetMapping("/marcaciones/diariasXMes")
+    public ResponseEntity<Map<String, Object>> reporteDiarioXMes(@RequestParam int codiGrup,@RequestParam String fecha_ini,@RequestParam String fecha_fin,@RequestParam int reprocesar) {
+        List<Map<String, Object>> data=service.marcacionesDiariasXMes(codiGrup, fecha_ini, fecha_fin, reprocesar );
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/marcacion/reprocesar-por-turno")
+    public ResponseEntity<Map<String, Object>> reprocesarMarcacionPorTurno(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+            String  fechProg = requestBody.get("fechProg").toString();
+            Integer codiTurn = Integer.parseInt(requestBody.get("codiTurn").toString());
+
+            service.reprocesarMarcacionPorTurno(
+                    codiPers,
+                    fechProg,
+                    codiTurn
+            );
+
+            // ✅ SI LLEGÓ AQUÍ → OK
+            response.put("resultado", "ok");
+            response.put("mensaje", "Marcación reprocesada correctamente por turno");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al reprocesar la marcación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }
+    }
+
+
+
+
+
 
     // GET: /api/reportes/asistencia/mensual?inicio=2025-12-01&fin=2025-12-31&codiGrup=1
     @GetMapping("/reportes/asistencia/mensual")
@@ -700,6 +765,95 @@ public class RRHHController {
 
         return ResponseEntity.ok(response);
     }
+    @PutMapping("/programacion/modificarMarcaciones")
+    public ResponseEntity<Map<String, Object>> modificarMarcaciones(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+
+            Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+            String  fechProg = requestBody.get("fechProg").toString(); // yyyy-MM-dd
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+            Integer codiTurn = Integer.parseInt(requestBody.get("codiTurn").toString());
+            String  tipo     = requestBody.get("tipo").toString();
+            Integer codiTipoObsv = Integer.parseInt(requestBody.get("codiTipoObsv").toString());
+            Integer codiUsua = Integer.parseInt(requestBody.get("codiUsua").toString());
+
+            // =============================
+            // HORA OPCIONAL (I no la usa)
+            // =============================
+            String hora = null;
+            if (requestBody.containsKey("hora") && requestBody.get("hora") != null) {
+                String h = requestBody.get("hora").toString();
+                if (!h.isBlank()) {
+                    hora = h;
+                }
+            }
+
+            // =============================
+            // VALIDACIÓN BÁSICA CONTROLLER
+            // =============================
+            if (!tipo.equals("E") && !tipo.equals("S") && !tipo.equals("I")) {
+                response.put("resultado", "error");
+                response.put("mensaje", "Tipo de marcación inválido (E, S, I)");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if ((tipo.equals("E") || tipo.equals("S")) && hora == null) {
+                response.put("resultado", "error");
+                response.put("mensaje", "La hora es obligatoria para tipo " + tipo);
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // =============================
+            // LLAMADA AL SERVICE
+            // =============================
+            int resultado = service.modificarMarcaciones(
+                    codiPers,
+                    fechProg,
+                    codiServ,
+                    codiTurn,
+                    hora,
+                    tipo,
+                    codiTipoObsv,
+                    codiUsua
+            );
+
+            if (resultado > 0) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Marcación modificada exitosamente");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("resultado", "error");
+                response.put("mensaje", "No se encontró la marcación a modificar");
+                return ResponseEntity.ok(response);
+            }
+
+        } catch (NumberFormatException e) {
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Formato numérico inválido");
+            response.put("error_tecnico", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+
+            e.printStackTrace(); // debugging
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al intentar modificar la marcación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }
+    }
+
+
 
 
 

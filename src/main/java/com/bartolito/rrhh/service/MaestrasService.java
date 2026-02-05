@@ -233,90 +233,105 @@ public class MaestrasService {
 
     /*====================== SECCIÓN DE PERSONA_MES  ======================*/
 
-    public List<Map<String, Object>> listarPM(Integer codiEmpr, String codiMes) {
-        return repository.listarPM(codiEmpr, codiMes);
+    public List<Map<String, Object>> listarContrato(Integer codiEmpr) {
+        return repository.listarContrato(codiEmpr);
     }
 
-    public Map<String, Object> seleccionarPM(Integer codiPers, String codiMes) {
-        List<Map<String, Object>> results =repository.seleccionarPM(codiPers, codiMes);
+    public Map<String, Object> seleccionarContrato(Integer codiCntr) {
+        List<Map<String, Object>> results =
+                repository.seleccionarContrato(codiCntr);
+
         if (results.isEmpty()) {
-            throw new NoSuchElementException("No existe asignación mensual para la persona "+ codiPers + " y mes " + codiMes);
+            throw new NoSuchElementException(
+                    "No existe contrato con código " + codiCntr
+            );
         }
         return results.get(0);
     }
 
-    public int agregarPM(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
-                    Integer codiCarg,String fechInic,String fechFina,Integer usuaCrea) {
+    public int agregarContrato(
+            Integer codiPers,
+            String numCntr,
+            String tipoCntr,
+            Integer codiDepa,
+            Integer codiCarg,
+            Integer numeHora,
+            String tipoJorn,
+            String modalCntr,
+            String fechInic,
+            String fechFina,
+            Double suelBase,
+            String moneda,
+            Integer usuaCrea) {
 
-        int resultado = repository.agregarPM(
-                codiPers,codiMes,codiDepa,numeHora,
-                codiCarg,fechInic,fechFina,usuaCrea);
+        int resultado = repository.agregarContrato(
+                codiPers, numCntr, tipoCntr, codiDepa, codiCarg,
+                numeHora, tipoJorn, modalCntr,
+                fechInic, fechFina, suelBase, moneda, usuaCrea
+        );
 
         if (resultado == 0) {
-            throw new IllegalStateException("Ya existe una asignación mensual para la persona "+ codiPers + " en el mes " + codiMes);
+            throw new IllegalStateException(
+                    "La persona ya tiene un contrato ACTIVO"
+            );
         }
 
         if (resultado < 0) {
-            throw new IllegalStateException("Error al registrar la asignación mensual");
+            throw new IllegalStateException(
+                    "Error al registrar el contrato"
+            );
         }
 
         return resultado;
     }
 
-    public int modificarPM(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
-                        Integer codiCarg,String fechInic,String fechFina,Integer usuaModi) {
-
-        int filasAfectadas = repository.modificarPM(
-                codiPers,codiMes,codiDepa,numeHora,
-                codiCarg,fechInic,fechFina,usuaModi);
-
-        if (filasAfectadas == 0) {
-            throw new NoSuchElementException(
-                    "No se pudo modificar la asignación mensual. "
-                            + "No existe registro para la persona "
-                            + codiPers + " y mes " + codiMes
-            );
-        }
-
-        if (filasAfectadas < 0) {
-            throw new IllegalStateException(
-                    "No se pudo modificar la asignación mensual"
-            );
-        }
-        return  filasAfectadas;
-    }
-
-    public int eliminarPM(Integer codiPers, String codiMes) {
-
-        int filasAfectadas =
-                repository.eliminarPM(codiPers, codiMes);
-
-        if (filasAfectadas == 0) {
-            throw new NoSuchElementException(
-                    "No existe asignación mensual para eliminar "
-                            + "(Persona " + codiPers + ", Mes " + codiMes + ")"
-            );
-        }
-
-        if (filasAfectadas < 0) {
-            throw new IllegalStateException(
-                    "No se pudo eliminar la asignación mensual"
-            );
-        }
-
-        return filasAfectadas;
-    }
-
-    public List<Map<String, Object>> listarPMDepartamento(
+    public int modificarContrato(
+            Integer codiCntr,
             Integer codiDepa,
-            String codiMes) {
+            Integer codiCarg,
+            Integer numeHora,
+            String tipoJorn,
+            String modalCntr,
+            String fechFina,
+            Double suelBase,
+            String moneda,
+            Integer usuaModi) {
 
-        List<Map<String, Object>> result =
-                repository.listarPMDepartamento(codiDepa, codiMes);
+        int resultado = repository.modificarContrato(
+                codiCntr, codiDepa, codiCarg, numeHora,
+                tipoJorn, modalCntr, fechFina, suelBase, moneda, usuaModi
+        );
 
-        // Manteniendo tu estilo: para listados no lanzamos excepción
-        return result;
+        if (resultado == 0) {
+            throw new NoSuchElementException(
+                    "No existe contrato para modificar"
+            );
+        }
+
+        if (resultado < 0) {
+            throw new IllegalStateException(
+                    "No se pudo modificar el contrato"
+            );
+        }
+
+        return resultado;
     }
+
+
+    public int finalizarContrato(Integer codiCntr, String motivoFin, Integer usuaModi) {
+
+        int resultado =
+                repository.finalizarContrato(codiCntr, motivoFin, usuaModi);
+
+        if (resultado < 0) {
+            throw new IllegalStateException(
+                    "No se pudo finalizar el contrato"
+            );
+        }
+
+        return resultado;
+    }
+
     /*====================== SECCIÓN DE FERIADOS  ======================*/
     public List<Map<String, Object>> listarFeriados(String codiMes) {
         return repository.listarFeriados(codiMes);
@@ -455,6 +470,18 @@ public class MaestrasService {
         return repository.listarPersonaAnio(
                 codiEmpr,
                 anio
+        );
+    }
+
+
+    /*
+     * ====================== SECCIÓN TIPO DE OBSERVACION ======================
+     */
+    public List<Map<String, Object>> listarTipoObservacion(
+
+    ) {
+        return repository.listarTipoObservacion(
+
         );
     }
 

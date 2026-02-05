@@ -201,53 +201,88 @@ public class MaestrasRepository {
         return sigoldJdbc.queryForObject(sql, Integer.class, codiPers);
     }
 
-    /*====================== SECCIÓN DE PERSONA_MES  ======================*/
+    /*====================== SECCIÓN DE PERSONA CONTRATO  ======================*/
 
-    public List<Map<String, Object>> listarPM(Integer codiEmpr, String codiMes) {
-        String sql = "EXEC sp_bart_rrhh_persona_mes_listar ?, ?";
-        return sigoldJdbc.queryForList(sql,codiEmpr,codiMes);
+    public List<Map<String, Object>> listarContrato(Integer codiEmpr) {
+        String sql = "EXEC sp_bart_rrhh_persona_contrato_listar ? ";
+        return sigoldJdbc.queryForList(sql, codiEmpr);
     }
 
-    public List<Map<String, Object>> seleccionarPM(Integer codiPers, String codiMes) {
-        String sql = "EXEC sp_bart_rrhh_persona_mes_seleccionar ?, ?";
-        return sigoldJdbc.queryForList(sql,codiPers,codiMes);
+    public List<Map<String, Object>> seleccionarContrato(Integer codiCntr) {
+        String sql = "EXEC sp_bart_rrhh_persona_contrato_seleccionar ?";
+        return sigoldJdbc.queryForList(sql, codiCntr);
     }
 
-    public int agregarPM(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
-                    Integer codiCarg,String fechInic,String fechFina,Integer usuaCrea) {
-        String sql = "EXEC sp_bart_rrhh_persona_mes_agregar ?, ?, ?, ?, ?, ?, ?, ?";
-        return sigoldJdbc.queryForObject(
-                sql,
-                Integer.class,
-                codiPers,codiMes,codiDepa,numeHora,
-                codiCarg,fechInic,fechFina,usuaCrea
-        );
-    }
-
-    public int modificarPM(Integer codiPers,String codiMes,Integer codiDepa,Integer numeHora,
-                        Integer codiCarg,String fechInic,String fechFina,Integer usuaModi) {
-        String sql = "EXEC sp_bart_rrhh_persona_mes_modificar ?, ?, ?, ?, ?, ?, ?, ?";
-        return sigoldJdbc.queryForObject(
-                sql,
-                Integer.class,
-                codiPers,codiMes,codiDepa,numeHora,
-                codiCarg,fechInic,fechFina,usuaModi
-        );
-    }
-    public int eliminarPM(Integer codiPers, String codiMes) {
-        String sql = "EXEC sp_bart_rrhh_persona_mes_eliminar ?, ?";
-        return sigoldJdbc.queryForObject(sql,Integer.class,codiPers,codiMes);
-    }
-
-    public List<Map<String, Object>> listarPMDepartamento(
+    public int agregarContrato(
+            Integer codiPers,
+            String numCntr,
+            String tipoCntr,
             Integer codiDepa,
-            String codiMes) {
+            Integer codiCarg,
+            Integer numeHora,
+            String tipoJorn,
+            String modalCntr,
+            String fechInic,
+            String fechFina,
+            Double suelBase,
+            String moneda,
+            Integer usuaCrea) {
 
-        String sql = "EXEC sp_bart_rrhh_persona_mes_departamento_listar ?, ?";
-        return sigoldJdbc.queryForList(sql, codiDepa, codiMes);
+        String sql = "EXEC sp_bart_rrhh_persona_contrato_agregar ?,?,?,?,?,?,?,?,?,?,?,?,?";
+
+        return sigoldJdbc.queryForObject(
+                sql,
+                Integer.class,
+                codiPers,
+                numCntr,
+                tipoCntr,
+                codiDepa,
+                codiCarg,
+                numeHora,
+                tipoJorn,
+                modalCntr,
+                fechInic,
+                fechFina,
+                suelBase,
+                moneda,
+                usuaCrea
+        );
     }
 
+    public int modificarContrato(
+            Integer codiCntr,
+            Integer codiDepa,
+            Integer codiCarg,
+            Integer numeHora,
+            String tipoJorn,
+            String modalCntr,
+            String fechFina,
+            Double suelBase,
+            String moneda,
+            Integer usuaModi) {
 
+        String sql = "EXEC sp_bart_rrhh_persona_contrato_modificar ?,?,?,?,?,?,?,?,?,?";
+
+        return sigoldJdbc.queryForObject(
+                sql,
+                Integer.class,
+                codiCntr,
+                codiDepa,
+                codiCarg,
+                numeHora,
+                tipoJorn,
+                modalCntr,
+                fechFina,
+                suelBase,
+                moneda,
+                usuaModi
+        );
+    }
+
+    public int finalizarContrato(Integer codiCntr, String motivoFin, Integer usuaModi) {
+        String sql = "EXEC sp_bart_rrhh_persona_contrato_finalizar ?,?,?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiCntr, motivoFin, usuaModi);
+    }
 
     /*====================== SECCIÓN FERIADOS  ======================*/
     public List<Map<String, Object>> listarFeriados(String codiMes) {
@@ -357,6 +392,18 @@ public class MaestrasRepository {
         );
     }
 
+
+    /*====================== SECCIÓN TIPO DE OBSERVACION ======================*/
+    public List<Map<String, Object>> listarTipoObservacion(
+
+    ) {
+
+        String sql = "EXEC dbo.sp_bart_rrhh_observacion_tipo_listar";
+
+        return sigoldJdbc.queryForList(
+                sql
+        );
+    }
 
 
 }
