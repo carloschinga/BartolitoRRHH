@@ -71,21 +71,17 @@ public class MaestrasController {
 
 
     @PostMapping("/empresas/agregar")
-    public ResponseEntity<Map<String, Object>> agregar(
-            @RequestBody Map<String, String> r) {
-
+    public ResponseEntity<Map<String, Object>> agregar(@RequestBody Map<String, Object> r) {
         int id = service.agregarEmpresa(
-                r.get("nombEmpr"),
-
-                r.get("rangEntrPrev"),
-                r.get("rangEntrPost"),
-                r.get("rangSaliPrev"),
-                r.get("rangSaliPost"),
-
-                r.get("toleEntrPrev"),
-                r.get("toleEntrPost"),
-                r.get("toleSaliPrev"),
-                r.get("toleSaliPost")
+                (String) r.get("nombEmpr"),
+                (String) r.get("rangEntrPrev"),
+                (String) r.get("rangEntrPost"),
+                (String) r.get("rangSaliPrev"),
+                (String) r.get("rangSaliPost"),
+                (String) r.get("toleEntrPrev"),
+                (String) r.get("toleEntrPost"),
+                (String) r.get("toleSaliPrev"),
+                (String) r.get("toleSaliPost")
         );
 
         return ResponseEntity.ok(Map.of(
@@ -673,20 +669,19 @@ public class MaestrasController {
         return ResponseEntity.ok(response);
     }
 
-    /* ====================== SECCIÓN PERSONA MES ====================== */
-    @GetMapping("/persona-mes/listar")
-    public ResponseEntity<Map<String, Object>> listar(
-            @RequestParam(required = false) Integer codiEmpr,
-            @RequestParam(required = false) String codiMes) {
+    /* ====================== SECCIÓN PERSONA CONTRATO ====================== */
+
+    @GetMapping("/contrato/listar")
+    public ResponseEntity<Map<String, Object>> listarContrato(
+            @RequestParam(required = false) Integer codiEmpr) {
 
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
-            List<Map<String, Object>> result =
-                    service.listarPM(codiEmpr, codiMes);
+            List<Map<String, Object>> result =service.listarContrato(codiEmpr);
 
             Map<String, Object> data = new LinkedHashMap<>();
-            data.put("personaMes", result);
+            data.put("contratos", result);
 
             response.put("resultado", "ok");
             response.put("data", data);
@@ -694,30 +689,25 @@ public class MaestrasController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-
             response.put("resultado", "error");
-            response.put("mensaje", "Error al listar asignaciones mensuales");
+            response.put("mensaje", "Error al listar contratos");
             response.put("error_tecnico", e.getMessage());
-            response.put("causa_raiz",
-                    e.getCause() != null ? e.getCause().toString() : "Desconocida");
 
             return ResponseEntity.internalServerError().body(response);
         }
     }
 
-    @GetMapping("/persona-mes/seleccionar/{codiPers}/{codiMes}")
-    public ResponseEntity<Map<String, Object>> seleccionar(
-            @PathVariable Integer codiPers,
-            @PathVariable String codiMes) {
+    @GetMapping("/contrato/seleccionar/{codiCntr}")
+    public ResponseEntity<Map<String, Object>> seleccionarContrato(
+            @PathVariable Integer codiCntr) {
 
-        Map<String, Object> data = new LinkedHashMap<>();
         Map<String, Object> response = new LinkedHashMap<>();
+        Map<String, Object> data = new LinkedHashMap<>();
 
-        Map<String, Object> personaMes =
-                service.seleccionarPM(codiPers, codiMes);
+        Map<String, Object> contrato =
+                service.seleccionarContrato(codiCntr);
 
-        data.put("personaMes", personaMes);
+        data.put("contrato", contrato);
 
         response.put("resultado", "ok");
         response.put("data", data);
@@ -725,115 +715,64 @@ public class MaestrasController {
         return ResponseEntity.ok(response);
     }
 
-
-    @PostMapping("/persona-mes/agregar")
-    public ResponseEntity<Map<String, Object>> agregarPM(
+    @PostMapping("/contrato/agregar")
+    public ResponseEntity<Map<String, Object>> agregarContrato(
             @RequestBody Map<String, Object> body) {
 
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
-            Integer codiPers = Integer.parseInt(body.get("codiPers").toString());
-            String  codiMes  = body.get("codiMes").toString();
-            Integer codiDepa = Integer.parseInt(body.get("codiDepa").toString());
-            Integer numeHora = Integer.parseInt(body.get("numeHora").toString());
-            Integer codiCarg = Integer.parseInt(body.get("codiCarg").toString());
-            String  fechInic = body.get("fechInic").toString();
-            String fechFina = null;
-            if (body.containsKey("fechFina")
-                    && body.get("fechFina") != null
-                    && !body.get("fechFina").toString().trim().isEmpty()) {
-                fechFina = body.get("fechFina").toString();
-            }
-            Integer usuaCrea = Integer.parseInt(body.get("usuaCrea").toString());
-
-            int resultado = service.agregarPM(
-                    codiPers, codiMes, codiDepa, numeHora,
-                    codiCarg, fechInic, fechFina, usuaCrea
+            int resultado = service.agregarContrato(
+                    Integer.parseInt(body.get("codiPers").toString()),
+                    body.get("numCntr").toString(),
+                    body.get("tipoCntr").toString(),
+                    Integer.parseInt(body.get("codiDepa").toString()),
+                    Integer.parseInt(body.get("codiCarg").toString()),
+                    Integer.parseInt(body.get("numeHora").toString()),
+                    body.get("tipoJorn").toString(),
+                    body.get("modalCntr").toString(),
+                    body.get("fechInic").toString(),
+                    body.get("fechFina") != null ? body.get("fechFina").toString() : null,
+                    Double.parseDouble(body.get("suelBase").toString()),
+                    body.get("moneda").toString(),
+                    Integer.parseInt(body.get("usuaCrea").toString())
             );
 
             response.put("resultado", "ok");
-            response.put("mensaje", "Asignación mensual registrada correctamente");
+            response.put("mensaje", "Contrato registrado correctamente");
             response.put("codigo", resultado);
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-
             response.put("resultado", "error");
             response.put("mensaje", e.getMessage());
-
             return ResponseEntity.internalServerError().body(response);
         }
     }
 
-    @PutMapping("/persona-mes/modificar")
-    public ResponseEntity<Map<String, Object>> modificarPM(
+    @PutMapping("/contrato/finalizar")
+    public ResponseEntity<Map<String, Object>> finalizarContrato(
             @RequestBody Map<String, Object> body) {
 
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
-            Integer codiPers = Integer.parseInt(body.get("codiPers").toString());
-            String  codiMes  = body.get("codiMes").toString();
-            Integer codiDepa = Integer.parseInt(body.get("codiDepa").toString());
-            Integer numeHora = Integer.parseInt(body.get("numeHora").toString());
-            Integer codiCarg = Integer.parseInt(body.get("codiCarg").toString());
-            String  fechInic = body.get("fechInic").toString();
-            String fechFina = null;
-            if (body.containsKey("fechFina")
-                    && body.get("fechFina") != null
-                    && !body.get("fechFina").toString().trim().isEmpty()) {
-                fechFina = body.get("fechFina").toString();
-            }
-            Integer usuaModi = Integer.parseInt(body.get("usuaModi").toString());
-
-            int resultado = service.modificarPM(
-                    codiPers, codiMes, codiDepa, numeHora,
-                    codiCarg, fechInic, fechFina, usuaModi
+            int resultado = service.finalizarContrato(
+                    Integer.parseInt(body.get("codiCntr").toString()),
+                    body.get("motivoFin").toString(),
+                    Integer.parseInt(body.get("usuaModi").toString())
             );
 
             response.put("resultado", "ok");
-            response.put("mensaje", "Asignación mensual modificada correctamente");
+            response.put("mensaje", "Contrato finalizado correctamente");
             response.put("codigo", resultado);
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-
             response.put("resultado", "error");
             response.put("mensaje", e.getMessage());
-
-            return ResponseEntity.internalServerError().body(response);
-        }
-    }
-
-    @DeleteMapping("/persona-mes/eliminar")
-    public ResponseEntity<Map<String, Object>> eliminarPM(
-            @RequestBody Map<String, Object> body) {
-
-        Map<String, Object> response = new LinkedHashMap<>();
-
-        try {
-            Integer codiPers = Integer.parseInt(body.get("codiPers").toString());
-            String  codiMes  = body.get("codiMes").toString();
-
-            int resultado = service.eliminarPM(codiPers, codiMes);
-
-            response.put("resultado", "ok");
-            response.put("mensaje", "Asignación mensual eliminada correctamente");
-            response.put("codigo", resultado);
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            response.put("resultado", "error");
-            response.put("mensaje", e.getMessage());
-
             return ResponseEntity.internalServerError().body(response);
         }
     }
@@ -848,8 +787,7 @@ public class MaestrasController {
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
-            List<Map<String, Object>> result =
-                    service.listarPMDepartamento(codiDepa, codiMes);
+            List<Map<String, Object>> result =null; //service.listarPMDepartamento(codiDepa, codiMes);
 
             Map<String, Object> data = new LinkedHashMap<>();
             data.put("personaMes", result);
@@ -1211,5 +1149,37 @@ public class MaestrasController {
         }
     }
 
+
+    /* ====================== SECCIÓN TIPO OBSERVACION  ====================== */
+    @GetMapping("/tipoObservacion/listar")
+    public ResponseEntity<Map<String, Object>> listarTipoObservacion(
+    ) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            List<Map<String, Object>> result =
+                    service.listarTipoObservacion( );
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("TiposObservacion", result);
+
+            response.put("resultado", "ok");
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error de tipo de observacion");
+            response.put("error_tecnico", e.getMessage());
+            response.put("causa_raiz",
+                    e.getCause() != null ? e.getCause().toString() : "Desconocida");
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 
 }
