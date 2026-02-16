@@ -136,33 +136,30 @@ public class RRHHService {
 	}
 
 	public List<Map<String, Object>> seleccionarProgramacionPorPersona(Integer codiPersona, String fechaInicio,
-			String fechaFin) {
-		return repository.seleccionarProgramacionPorPersona(codiPersona, fechaInicio, fechaFin);
+			String fechaFin, Integer codiServ) {
+		return repository.seleccionarProgramacionPorPersona(codiPersona, fechaInicio, fechaFin, codiServ);
 	}
 
-	public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer codiGrup) {
-		return repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, codiGrup);
+	public int modificarProgramacion(Integer nuevoCodiHora, Integer codiPers, String fechProg, Integer codiGrup, Integer codiServ) {
+		return repository.modificarProgramacion(nuevoCodiHora, codiPers, fechProg, codiGrup, codiServ);
 
 	}
+
 
 	public int agregarProgramacion(Integer codiPers, String periodo, Integer codiGrup, Integer codiServ) {
 		return repository.agregarProgramacion(codiPers, periodo, codiGrup, codiServ);
 	}
 
-	public int eliminarProgramacion(Integer codiPers, String periodo, Integer codiGrup) {
-		return repository.eliminarProgramacion(codiPers, periodo, codiGrup);
+	public int eliminarProgramacion(Integer codiPers, String periodo ,int codiGrup, int codiServ) {
+		return repository.eliminarProgramacion(codiPers, periodo, codiGrup, codiServ);
 	}
 	
-	public int eliminarProgramacionSemana(Integer codiPers, Integer codiGrup, Integer codiHora, String fechProg) {
-		return repository.eliminarProgramacionSemana(codiPers, codiGrup, codiHora, fechProg);
+	public int eliminarProgramaciondia(Integer codiPers, String fechProg) {
+		return repository.eliminarProgramaciondia(codiPers,  fechProg);
 	}
 
 	public List<Map<String, Object>> listarPersonal() {
 		return repository.listarPersonal();
-	}
-
-	public List<Map<String, Object>> listarPersonalPorServicio(int codiServ) {
-		return repository.listarPersonalPorServicio(codiServ);
 	}
 
 	public Map<String, Object> seleccionarPersonal(Integer id) {
@@ -230,7 +227,19 @@ public class RRHHService {
 	 * ====================== SECCIÓN REPORTES DE ASISTENCIA ======================
 	 */
 
-	public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin, int codiServ) {
+    public List<Map<String, Object>> marcacionesDiarias(int codiGrup, String fecha_ini, String fecha_fin, int reprocesar) {
+        return repository.marcacionesDiarias(codiGrup,fecha_ini,fecha_fin, reprocesar);
+    }
+    public List<Map<String, Object>> marcacionesDiariasXMes(int codiGrup, String fecha_ini, String fecha_fin, int reprocesar) {
+        return repository.marcacionesDiariasXMes(codiGrup,fecha_ini,fecha_fin, reprocesar);
+    }
+    public void reprocesarMarcacionPorTurno(Integer codiPers,String fechProg,Integer codiTurn) {
+
+        repository.reprocesarMarcacionPorTurno(codiPers, fechProg, codiTurn);
+    }
+
+
+    public List<Map<String, Object>> reporteAsistenciaMensual(String fechaInicio, String fechaFin, int codiServ) {
 		return repository.reporteAsistenciaMensual(fechaInicio, fechaFin, codiServ);
 	}
 
@@ -250,6 +259,28 @@ public class RRHHService {
 		return repository.reporteResumenDiarioServicio(fecha,  codiServ);
 	}
 
+    public int modificarMarcaciones(
+            Integer codiPers,
+            String fechProg,
+            int codiServ,
+            int codiTurn,
+            String hora,
+            String tipo,
+            int codiTipoObsv,
+            int codiUsua
+    ) {
+
+        return repository.modificarMarcaciones(
+                codiPers,
+                fechProg,
+                codiServ,
+                codiTurn,
+                hora,
+                tipo,
+                codiTipoObsv,
+                codiUsua
+        );
+    }
 
 
 }
