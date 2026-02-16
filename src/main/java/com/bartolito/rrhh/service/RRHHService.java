@@ -118,7 +118,24 @@ public class RRHHService {
 		}
 	}
 
-	/* ====================== SECCIÓN PROGRAMACIÓN MENSUAL ====================== */
+    /*====================== SECCIÓN DE AJUSTE DE PROGRAMACION  ======================*/
+    public int ajusteCancelacion(Integer codiGrup, String fechProg, Integer codiServ, Integer codiPers, Integer usuario) {
+        return repository.ajusteCancelacion(codiGrup, fechProg, codiServ, codiPers, usuario);
+    }
+
+    public int ajusteIntercambio(Integer codiGrup, String fechProg, Integer codiServ, Integer persA, Integer persB, Integer usuario) {
+        return repository.ajusteIntercambio(codiGrup, fechProg, codiServ, persA, persB, usuario);
+    }
+
+    public int ajusteReemplazo(Integer codiGrup, String fechProg, Integer codiServ, Integer persSale, Integer persEntra, Integer usuario) {
+        return repository.ajusteReemplazo(codiGrup, fechProg, codiServ, persSale, persEntra, usuario);
+    }
+
+    public int ajusteCambioHorario(Integer codiGrup, String fechProg, Integer codiServ, Integer codiPers, Integer codiHoraNueva, Integer usuario) {
+        return repository.ajusteCambioHorario(codiGrup, fechProg, codiServ, codiPers, codiHoraNueva, usuario);
+    }
+
+    /* ====================== SECCIÓN PROGRAMACIÓN MENSUAL ====================== */
 
 	public List<Map<String, Object>> listarProgramacionMensual(String inicio, String fin, int codiGrup) {
 
@@ -158,7 +175,15 @@ public class RRHHService {
 		return repository.eliminarProgramaciondia(codiPers,  fechProg);
 	}
 
-	public List<Map<String, Object>> listarPersonal() {
+    public int cerrarProgramacion(Integer codiProg, Integer usuaCerr) {
+        return repository.cerrarProgramacion(codiProg,  usuaCerr);
+    }
+
+    public int validaSolapaProgramacion(Integer codiTrab, String fecha, Integer codiTurno, Integer codiServ) {
+        return repository.validaSolapaProgramacion(codiTrab, fecha, codiTurno, codiServ);
+    }
+
+    public List<Map<String, Object>> listarPersonal() {
 		return repository.listarPersonal();
 	}
 

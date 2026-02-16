@@ -100,6 +100,37 @@ public class RRHHRepository {
         return sigoldJdbc.queryForObject(sql, Integer.class, codiHoraDeta, codiHora, codiTurn, anulTurn, usuamodi);
     }
 
+    /*====================== SECCIÓN DE AJUSTE DE PROGRAMACION  ======================*/
+
+    public int ajusteCancelacion(Integer codiGrup,String fechProg,Integer codiServ,Integer codiPers,Integer usuario) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_cancelar_turno ?, ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql,Integer.class,codiGrup,fechProg,codiServ,codiPers,usuario);
+        // return 1 cancelo , 0 no cancelo
+    }
+    public int ajusteIntercambio(Integer codiGrup,String fechProg,Integer codiServ,Integer persA,Integer persB,Integer usuario) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_intercambio ?, ?, ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class,codiGrup, fechProg, codiServ, persA, persB, usuario);
+
+        // return 1 INTERCAMBIO, -1 NO EXISTE PROGRAMACION, -2 TIENEN EL MISMO TURNO , 0 NO INTERCAMBIO
+    }
+
+    public int ajusteReemplazo(Integer codiGrup,String fechProg,Integer codiServ,Integer persSale,Integer persEntra,Integer usuario) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_reemplazo ?, ?, ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql,Integer.class,codiGrup,fechProg,codiServ,persSale,persEntra,usuario);
+
+        // return 1 = REEMPLAZO OK,return -1 = TRABAJADOR YA PERTENECE A OTRO GRUPO EN EL MES, return 0 = NO SE PUDO REALIZAR EL REEMPLAZO
+    }
+
+    public int ajusteCambioHorario(Integer codiGrup,String fechProg,Integer codiServ,Integer codiPers,Integer codiHoraNueva,Integer usuario) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_cambio_horario ?, ?, ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql,Integer.class,codiGrup,fechProg,codiServ,codiPers,codiHoraNueva,usuario);
+
+        // return 1 = CAMBIO DE HORARIO OK
+        // return 0 = NO SE REALIZÓ EL CAMBIO (mismo turno o no existe programación)
+    }
+
+
+
 
     /*====================== SECCIÓN PROGRAMACIÓN MENSUAL ======================*/
 
@@ -154,6 +185,17 @@ public class RRHHRepository {
         return sigoldJdbc.update(sql, codiPers, fechProg);
     }
 
+    public int cerrarProgramacion(Integer codiProg, Integer usuaCerr) {
+        String sql = "EXEC sp_bart_rrhh_asis_programacion_cerrar ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiProg, usuaCerr);
+    }
+
+    public int validaSolapaProgramacion(Integer codiTrab, String fecha, Integer codiTurno, Integer codiServ) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_validar_solape ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class, codiTrab, fecha, codiTurno, codiServ);
+    }
+
+
 
     public List<Map<String, Object>> listarCabecera(String codiMes, Boolean soloActivos) {
         String sql = "EXEC sp_bart_rrhh_asis_programacion_cabecera_listar ?, ?";
@@ -174,6 +216,8 @@ public class RRHHRepository {
         String sql = "EXEC sp_bart_rrhh_asis_programacion_cabecera_eliminar ?, ?";
         return sigoldJdbc.queryForObject(sql, Integer.class, codiProg, usuaModi);
     }
+
+
     
     /// ==========================================================================
     
