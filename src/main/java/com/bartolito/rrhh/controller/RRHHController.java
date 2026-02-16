@@ -474,6 +474,62 @@ public class RRHHController {
         }
     }
 
+    @PostMapping("/programacion/cerrarProgramacion")
+    public ResponseEntity<Map<String, Object>> cerrarProgramacion(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiProg = Integer.parseInt(requestBody.get("codiProg").toString());
+            Integer usuaCerr = Integer.parseInt(requestBody.get("usuaCerr").toString());
+
+            int resultado = service.cerrarProgramacion(codiProg, usuaCerr);
+
+            response.put("resultado", resultado == 1 ? "ok" : "sin_cerrar");
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al cerrar la programación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+
+    @PostMapping("/programacion/validaSolapaProgramacion")
+    public ResponseEntity<Map<String, Object>> validaSolapaProgramacion(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiTrab = Integer.parseInt(requestBody.get("codiTrab").toString());
+            String fecha = requestBody.get("fecha").toString();
+            Integer codiTurno = Integer.parseInt(requestBody.get("codiTurno").toString());
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+
+            int resultado = service.validaSolapaProgramacion(codiTrab, fecha, codiTurno,codiServ);
+
+            response.put("resultado", resultado == 1 ? "solapa" : "ok");
+            response.put("valor", resultado); // 1 = solapa, 0 = no solapa
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al validar solape de programación");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
 
 
     @PostMapping("/programacion/listarCabecera")
@@ -643,7 +699,163 @@ public class RRHHController {
         return ResponseEntity.ok(response);
     }
 
+    /*====================== SECCIÓN DE AJUSTE DE PROGRAMACION  ======================*/
 
+    @PostMapping("/programacion/ajuste/cancelacion")
+    public ResponseEntity<Map<String, Object>> ajusteCancelacion(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
+            String fechProg  = requestBody.get("fechProg").toString();
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+            Integer codiPers = Integer.parseInt(requestBody.get("codiPers").toString());
+            Integer usuario  = Integer.parseInt(requestBody.get("usuario").toString());
+
+            int resultado = service.ajusteCancelacion(codiGrup, fechProg, codiServ, codiPers, usuario);
+
+            if (resultado == 1) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Turno cancelado correctamente.");
+
+            } else {
+                response.put("resultado", "error");
+                response.put("mensaje", "No se pudo cancelar el turno.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al cancelar el turno");
+            response.put("error_tecnico", e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PostMapping("/programacion/ajuste/intercambio")
+    public ResponseEntity<Map<String, Object>> ajusteIntercambio(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
+            String fechProg  = requestBody.get("fechProg").toString();
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+            Integer persA    = Integer.parseInt(requestBody.get("persA").toString());
+            Integer persB    = Integer.parseInt(requestBody.get("persB").toString());
+            Integer usuario  = Integer.parseInt(requestBody.get("usuario").toString());
+
+            int resultado = service.ajusteIntercambio(codiGrup, fechProg, codiServ, persA, persB, usuario);
+
+            if (resultado == 1) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Intercambio realizado correctamente.");
+
+            } else if (resultado == -1) {
+                response.put("resultado", "error");
+                response.put("mensaje", "No existe programación para uno de los trabajadores.");
+
+            } else if (resultado == -2) {
+                response.put("resultado", "error");
+                response.put("mensaje", "Ambos trabajadores ya tienen el mismo turno.");
+
+            } else {
+                response.put("resultado", "error");
+                response.put("mensaje", "No se pudo realizar el intercambio.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al realizar el intercambio");
+            response.put("error_tecnico", e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PostMapping("/programacion/ajuste/reemplazo")
+    public ResponseEntity<Map<String, Object>> ajusteReemplazo(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiGrup   = Integer.parseInt(requestBody.get("codiGrup").toString());
+            String fechProg    = requestBody.get("fechProg").toString();
+            Integer codiServ   = Integer.parseInt(requestBody.get("codiServ").toString());
+            Integer persSale   = Integer.parseInt(requestBody.get("persSale").toString());
+            Integer persEntra  = Integer.parseInt(requestBody.get("persEntra").toString());
+            Integer usuario    = Integer.parseInt(requestBody.get("usuario").toString());
+
+            int resultado = service.ajusteReemplazo(codiGrup, fechProg, codiServ, persSale, persEntra, usuario);
+
+            if (resultado == 1) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Reemplazo realizado correctamente.");
+
+            } else if (resultado == -1) {
+                response.put("resultado", "error");
+                response.put("mensaje", "El trabajador ya pertenece a otro grupo en el mes.");
+
+            } else {
+                response.put("resultado", "error");
+                response.put("mensaje", "No se pudo realizar el reemplazo.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al realizar el reemplazo");
+            response.put("error_tecnico", e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PostMapping("/programacion/ajuste/cambioHorario")
+    public ResponseEntity<Map<String, Object>> ajusteCambioHorario(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiGrup      = Integer.parseInt(requestBody.get("codiGrup").toString());
+            String fechProg       = requestBody.get("fechProg").toString();
+            Integer codiServ      = Integer.parseInt(requestBody.get("codiServ").toString());
+            Integer codiPers      = Integer.parseInt(requestBody.get("codiPers").toString());
+            Integer codiHoraNueva = Integer.parseInt(requestBody.get("codiHoraNueva").toString());
+            Integer usuario       = Integer.parseInt(requestBody.get("usuario").toString());
+
+            int resultado = service.ajusteCambioHorario(
+                    codiGrup, fechProg, codiServ, codiPers, codiHoraNueva, usuario);
+
+            if (resultado == 1) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Cambio de horario realizado correctamente.");
+
+            } else {
+                response.put("resultado", "error");
+                response.put("mensaje", "No se realizó el cambio (mismo turno o no existe programación).");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al cambiar el horario");
+            response.put("error_tecnico", e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 
 
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
