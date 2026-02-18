@@ -107,9 +107,9 @@ public class RRHHRepository {
         return sigoldJdbc.queryForObject(sql,Integer.class,codiGrup,fechProg,codiServ,codiPers,usuario);
         // return 1 cancelo , 0 no cancelo
     }
-    public int ajusteIntercambio(Integer codiGrup,String fechProg,Integer codiServ,Integer persA,Integer persB,Integer usuario) {
-        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_intercambio ?, ?, ?, ?, ?, ?";
-        return sigoldJdbc.queryForObject(sql, Integer.class,codiGrup, fechProg, codiServ, persA, persB, usuario);
+    public int ajusteIntercambio(Integer codiGrup,String fechProg,Integer codiServA,Integer persA,Integer codiServB, Integer persB,Integer usuario) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_intercambio ?, ?, ?, ?, ?, ?, ?";
+        return sigoldJdbc.queryForObject(sql, Integer.class,codiGrup, fechProg, codiServA, persA,  codiServB,persB, usuario);
 
         // return 1 INTERCAMBIO, -1 NO EXISTE PROGRAMACION, -2 TIENEN EL MISMO TURNO , 0 NO INTERCAMBIO
     }
@@ -127,6 +127,21 @@ public class RRHHRepository {
 
         // return 1 = CAMBIO DE HORARIO OK
         // return 0 = NO SE REALIZÓ EL CAMBIO (mismo turno o no existe programación)
+    }
+    public int ajusteCambioServicio(Integer codiGrup,String fechProg,Integer codiServBase,Integer codiPersBase,Integer codiHoraBase,Integer codiServNuevo,Integer usuario) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_cambiar_servicio ?, ?, ?, ?, ?, ?, ?";
+
+        return sigoldJdbc.queryForObject(sql,Integer.class,codiGrup,fechProg,codiServBase,codiPersBase,codiHoraBase,codiServNuevo,usuario);
+
+        // return 1 = CAMBIO DE SERVICIO OK
+        // return 0 = NO SE REALIZÓ EL CAMBIO
+    }
+
+    public List<Map<String, Object>> listarAjustesHorarioPorPersonalYServicio(Integer codiPersBase, Integer codiServ) {
+
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_ajuste_listar ?, ?";
+
+        return sigoldJdbc.queryForList(sql, codiPersBase, codiServ);
     }
 
 
@@ -313,7 +328,14 @@ public class RRHHRepository {
         }
     }
 
+    public List<Map<String, Object>> listarProgramacionHorarioFarmacia(Integer siscod) {
+        String sql = "EXEC sp_bart_rrhh_horario_programacion_farmacia ?";
+        return sigoldJdbc.queryForList(sql, siscod);
+    }
 
-
+    public List<Map<String, Object>> listarCabeceraFarmacia(Integer siscod) {
+        String sql = "EXEC sp_bart_rrhh_listar_cabecera_farmacia ?";
+        return sigoldJdbc.queryForList(sql, siscod);
+    }
 
 }
