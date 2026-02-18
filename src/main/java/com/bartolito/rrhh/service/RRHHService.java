@@ -123,8 +123,8 @@ public class RRHHService {
         return repository.ajusteCancelacion(codiGrup, fechProg, codiServ, codiPers, usuario);
     }
 
-    public int ajusteIntercambio(Integer codiGrup, String fechProg, Integer codiServ, Integer persA, Integer persB, Integer usuario) {
-        return repository.ajusteIntercambio(codiGrup, fechProg, codiServ, persA, persB, usuario);
+    public int ajusteIntercambio(Integer codiGrup, String fechProg, Integer codiServA, Integer persA,Integer codiServB,  Integer persB, Integer usuario) {
+        return repository.ajusteIntercambio(codiGrup, fechProg, codiServA, persA,codiServB, persB, usuario);
     }
 
     public int ajusteReemplazo(Integer codiGrup, String fechProg, Integer codiServ, Integer persSale, Integer persEntra, Integer usuario) {
@@ -134,6 +134,20 @@ public class RRHHService {
     public int ajusteCambioHorario(Integer codiGrup, String fechProg, Integer codiServ, Integer codiPers, Integer codiHoraNueva, Integer usuario) {
         return repository.ajusteCambioHorario(codiGrup, fechProg, codiServ, codiPers, codiHoraNueva, usuario);
     }
+
+    public int ajusteCambioServicio(Integer codiGrup,String fechProg,Integer codiServBase,Integer codiPersBase,Integer codiHoraBase,Integer codiServNuevo,Integer usuario) {
+        return repository.ajusteCambioServicio(codiGrup,fechProg,codiServBase,codiPersBase,codiHoraBase,codiServNuevo,usuario);
+    }
+
+    public List<Map<String, Object>> listarAjustesHorarioPorPersonalYServicio(Integer codiPersBase, Integer codiServ) {
+
+        List<Map<String, Object>> results = repository
+                .listarAjustesHorarioPorPersonalYServicio(codiPersBase, codiServ);
+
+        return results;
+    }
+
+
 
     /* ====================== SECCIÓN PROGRAMACIÓN MENSUAL ====================== */
 
@@ -307,5 +321,11 @@ public class RRHHService {
         );
     }
 
+    public List<Map<String, Object>> listarProgramacionHorarioFarmacia(Integer siscod) {
+        return repository.listarProgramacionHorarioFarmacia(siscod);
+    }
 
+    public List<Map<String, Object>> listarCabeceraFarmacia(Integer siscod) {
+        return repository.listarCabeceraFarmacia(siscod);
+    }
 }
