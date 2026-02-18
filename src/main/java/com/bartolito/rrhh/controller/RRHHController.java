@@ -745,12 +745,13 @@ public class RRHHController {
         try {
             Integer codiGrup = Integer.parseInt(requestBody.get("codiGrup").toString());
             String fechProg  = requestBody.get("fechProg").toString();
-            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+            Integer codiServA = Integer.parseInt(requestBody.get("codiServA").toString());
             Integer persA    = Integer.parseInt(requestBody.get("persA").toString());
+            Integer codiServB = Integer.parseInt(requestBody.get("codiServB").toString());
             Integer persB    = Integer.parseInt(requestBody.get("persB").toString());
             Integer usuario  = Integer.parseInt(requestBody.get("usuario").toString());
 
-            int resultado = service.ajusteIntercambio(codiGrup, fechProg, codiServ, persA, persB, usuario);
+            int resultado = service.ajusteIntercambio(codiGrup, fechProg, codiServA, persA, codiServB,persB, usuario);
 
             if (resultado == 1) {
                 response.put("resultado", "ok");
@@ -764,7 +765,18 @@ public class RRHHController {
                 response.put("resultado", "error");
                 response.put("mensaje", "Ambos trabajadores ya tienen el mismo turno.");
 
-            } else {
+            } else if (resultado == -3) {
+                response.put("resultado", "error");
+                response.put("mensaje", "Es la misma persona.");
+            } else if (resultado == -4) {
+                response.put("resultado", "error");
+                response.put("mensaje", "Persona A ya tiene ese turno en otro servicio (cruce).");
+            }else if (resultado == -5) {
+                response.put("resultado", "error");
+                response.put("mensaje", "Persona B ya tiene ese turno en otro servicio (cruce).");
+            }
+
+            else {
                 response.put("resultado", "error");
                 response.put("mensaje", "No se pudo realizar el intercambio.");
             }
@@ -800,11 +812,15 @@ public class RRHHController {
                 response.put("resultado", "ok");
                 response.put("mensaje", "Reemplazo realizado correctamente.");
 
-            } else if (resultado == -1) {
+            } else if (resultado == -2) {
                 response.put("resultado", "error");
-                response.put("mensaje", "El trabajador ya pertenece a otro grupo en el mes.");
+                response.put("mensaje", "El reemplazante está con licencia (L) ese día.");
 
-            } else {
+            } else if (resultado == -3) {
+                response.put("resultado", "error");
+                response.put("mensaje", "El reemplazante ya tiene turno en otro servicio/grupo a esa misma hora.");
+
+            }            else {
                 response.put("resultado", "error");
                 response.put("mensaje", "No se pudo realizar el reemplazo.");
             }
@@ -841,7 +857,16 @@ public class RRHHController {
                 response.put("resultado", "ok");
                 response.put("mensaje", "Cambio de horario realizado correctamente.");
 
+            }else if (resultado == -1) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Ya tiene ese mismo horario.");
+
+            } else if (resultado == -2) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "El horario se cruza con otro turno en ese día");
+
             } else {
+
                 response.put("resultado", "error");
                 response.put("mensaje", "No se realizó el cambio (mismo turno o no existe programación).");
             }
@@ -856,6 +881,91 @@ public class RRHHController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+    @PostMapping("/programacion/ajuste/cambioServicio")
+    public ResponseEntity<Map<String, Object>> ajusteCambioServicio(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiGrup      = Integer.parseInt(requestBody.get("codiGrup").toString());
+            String fechProg       = requestBody.get("fechProg").toString();
+            Integer codiServBase  = Integer.parseInt(requestBody.get("codiServBase").toString());
+            Integer codiPersBase  = Integer.parseInt(requestBody.get("codiPersBase").toString());
+            Integer codiHoraBase  = Integer.parseInt(requestBody.get("codiHoraBase").toString());
+            Integer codiServNuevo = Integer.parseInt(requestBody.get("codiServNuevo").toString());
+            Integer usuario       = Integer.parseInt(requestBody.get("usuario").toString());
+
+            int resultado = service.ajusteCambioServicio(
+                    codiGrup,
+                    fechProg,
+                    codiServBase,
+                    codiPersBase,
+                    codiHoraBase,
+                    codiServNuevo,
+                    usuario
+            );
+
+            if (resultado == 1) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "Cambio de servicio realizado correctamente.");
+
+            }else if  (resultado == 2) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "El turno base no existe (ya fue movido antes)");
+
+            }
+            else if  (resultado == 3) {
+                response.put("resultado", "ok");
+                response.put("mensaje", "El servicio destino ya tiene horario asignado");
+
+            }
+            else {
+                response.put("resultado", "error");
+                response.put("mensaje", "No se realizó el cambio de servicio.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("resultado", "error");
+            response.put("mensaje", "Error al cambiar el servicio");
+            response.put("error_tecnico", e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PostMapping("/programacion/ajuste/listarAjustesHorario")
+    public ResponseEntity<Map<String, Object>> listarAjustesHorarioPorPersonalYServicio(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        try {
+            Integer codiPersBase = Integer.parseInt(requestBody.get("codiPersBase").toString());
+            Integer codiServ = Integer.parseInt(requestBody.get("codiServ").toString());
+
+            List<Map<String, Object>> data = service
+                    .listarAjustesHorarioPorPersonalYServicio(codiPersBase, codiServ);
+
+            response.put("data", data);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.put("resultado", "error");
+            response.put("mensaje", "Error");
+            response.put("error_tecnico", e.getMessage());
+
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+
 
 
     /*====================== SECCIÓN REPORTES DE ASISTENCIA ======================*/
@@ -1066,6 +1176,32 @@ public class RRHHController {
     }
 
 
+    @GetMapping("/programacion/listar/farmacia")
+    public ResponseEntity<Map<String, Object>> listarProgramacionHorarioFarmacia(@RequestParam int siscod) {
+
+        List<Map<String, Object>> data = service.listarProgramacionHorarioFarmacia(siscod);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        // El frontend recibirá un JSON donde las llaves son las fechas ("2025-12-01": "A")
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/programacion/cabecera/farmacia")
+    public ResponseEntity<Map<String, Object>> listarCabeceraFarmacia(
+            @RequestParam int siscod) {
+
+        List<Map<String, Object>> data =
+                service.listarCabeceraFarmacia(siscod);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("resultado", "ok");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
 
 
 
